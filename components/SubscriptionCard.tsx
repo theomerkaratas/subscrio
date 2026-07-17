@@ -9,7 +9,7 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
         <View className="sub-head">
             <View className="sub-main">
                 <View className="sub-icon-wrap">
-                    <Image source={icon || require('@/assets/default-icon.png')} className="sub-icon" />
+                    <Image source={icon || require('@/assets/icons/logo.png')} className="sub-icon" />
                 </View>
                 <View className="sub-copy">
                     <Text numberOfLines={1} className="sub-title">{name || 'Unknown'}</Text>
