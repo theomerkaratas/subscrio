@@ -16,6 +16,11 @@ import { useState } from "react";
 const SafeAreaView = styled(RNSafeAreaView);
 
 
+/**
+ * Displays the home dashboard with account details, upcoming renewals, and subscriptions.
+ *
+ * @returns The rendered home dashboard view.
+ */
 export default function App() {
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
     return (

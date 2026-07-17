@@ -3,6 +3,9 @@ import { SplashScreen, Stack } from "expo-router";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 
+/**
+ * Renders the root navigation layout after the app fonts have loaded.
+ */
 export default function RootLayout() {
   const [fontsLoaded] = useFonts({
     'sans-bold': require('../assets/fonts/PlusJakartaSans-Bold.ttf'),
