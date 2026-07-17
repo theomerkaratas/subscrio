@@ -17,6 +17,13 @@
     --color-destructive: #dc2626;
     --color-subscription: #8fd1bd;
 
+    --font-sans: sans-regular;
+    --font-sans-light: sans-light;
+    --font-sans-medium: sans-medium;
+    --font-sans-semibold: sans-semibold;
+    --font-sans-bold: sans-bold;
+    --font-sans-extrabold: sans-extrabold;
+
     --spacing-0: 0px;
     --spacing-1: 4px;
     --spacing-2: 8px;
@@ -83,7 +90,7 @@
     }
 
     .home-balance-card {
-        @apply my-2.5 min-h-50 justify-between gap-5 rounded-bl-4xl rounded-tr-4xl bg-accent p-6;
+        @apply my-2.5 min-h-40 justify-between gap-5 rounded-bl-4xl rounded-tr-4xl bg-accent p-6;
     }
 
     .home-balance-label {
@@ -126,8 +133,12 @@
         @apply flex-row items-center gap-3;
     }
 
+    .upcoming-icon-wrap {
+        @apply size-14 items-center justify-center rounded-lg bg-muted;
+    }
+
     .upcoming-icon {
-        @apply size-14;
+        @apply size-9;
     }
 
     .upcoming-price {
@@ -158,8 +169,12 @@
         @apply min-w-0 flex-1 flex-row items-center gap-3;
     }
 
+    .sub-icon-wrap {
+        @apply size-17 items-center justify-center rounded-lg bg-muted;
+    }
+
     .sub-icon {
-        @apply size-16 rounded-lg;
+        @apply size-10;
     }
 
     .sub-copy {
@@ -187,19 +202,19 @@
     }
 
     .sub-body {
-        @apply mt-6 gap-4;
+        @apply mt-3 gap-2;
     }
 
     .sub-details {
-        @apply gap-6;
+        @apply gap-3;
     }
 
     .sub-row {
-        @apply flex-row items-center justify-between gap-3;
+        @apply flex-row items-center justify-between gap-1;
     }
 
     .sub-row-copy {
-        @apply min-w-0 flex-1 flex-row items-center gap-2;
+        @apply min-w-0 flex-1 flex-row items-center gap-1;
     }
 
     .sub-label {
