@@ -12,11 +12,13 @@ import ListHeading from "@/components/ListHeading";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import { useState } from "react";
+import { useUser } from "@clerk/expo";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
 
 export default function App() {
+    const { user } = useUser();
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
     return (
         <SafeAreaView className="flex-1 bg-background p-5">
@@ -26,8 +28,13 @@ export default function App() {
                     <>
                         <View className="home-header">
                             <View className="home-user">
-                                <Image source={images.avatar} className="home-avatar" />
-                                <Text className="home-user-name">{HOME_USER.name}</Text>
+                                <Image 
+                                    source={user?.imageUrl ? { uri: user.imageUrl } : images.avatar} 
+                                    className="home-avatar" 
+                                />
+                                <Text className="home-user-name" numberOfLines={1} ellipsizeMode="tail">
+                                    {user?.fullName || user?.primaryEmailAddress?.emailAddress || HOME_USER.name}
+                                </Text>
                             </View>
 
                             <TouchableOpacity className="w-12 h-12 rounded-full bg-background p-2 justify-center items-center border border-muted">
