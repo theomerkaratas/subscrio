@@ -1,6 +1,5 @@
 import "../../global.css"
-import { Text, View, Image, TouchableOpacity, FlatList } from "react-native";
-import { Link } from "expo-router";
+import { Text, View, Image, Pressable, FlatList } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/images";
@@ -11,15 +10,22 @@ import dayjs from "dayjs";
 import ListHeading from "@/components/ListHeading";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
 import SubscriptionCard from "@/components/SubscriptionCard";
+import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
 import { useState } from "react";
 import { useUser } from "@clerk/expo";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
-
 export default function App() {
     const { user } = useUser();
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
+    const [subscriptions, setSubscriptions] = useState<Subscription[]>(HOME_SUBSCRIPTIONS);
+    const [modalVisible, setModalVisible] = useState(false);
+
+    const handleAddSubscription = (subscription: Subscription) => {
+        setSubscriptions((prev) => [subscription, ...prev]);
+    };
+
     return (
         <SafeAreaView className="flex-1 bg-background p-5">
 
@@ -37,9 +43,12 @@ export default function App() {
                                 </Text>
                             </View>
 
-                            <TouchableOpacity className="w-12 h-12 rounded-full bg-background p-2 justify-center items-center border border-muted">
+                            <Pressable
+                                className="w-12 h-12 rounded-full bg-background p-2 justify-center items-center border border-muted"
+                                onPress={() => setModalVisible(true)}
+                            >
                                 <Image source={icons.add} className="w-6 h-6" />
-                            </TouchableOpacity>
+                            </Pressable>
                         </View>
 
                         <View className="home-balance-card">
@@ -71,7 +80,7 @@ export default function App() {
                         <ListHeading title="All Subscriptions" />
                     </>
                 )}
-                data={HOME_SUBSCRIPTIONS} 
+                data={subscriptions}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <SubscriptionCard 
@@ -85,6 +94,12 @@ export default function App() {
                 showsVerticalScrollIndicator={false}
                 ListEmptyComponent={<Text className="home-empty-state">No subscriptions yet.</Text>}
                 contentContainerClassName="pb-30"
+            />
+
+            <CreateSubscriptionModal
+                visible={modalVisible}
+                onClose={() => setModalVisible(false)}
+                onSubmit={handleAddSubscription}
             />
         </SafeAreaView>
     );

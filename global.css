@@ -432,4 +432,52 @@
     .category-chip-text-active {
         @apply text-accent;
     }
+
+    .subs-screen-header {
+        @apply mb-4 flex-row items-center justify-between;
+    }
+
+    .subs-screen-title {
+        @apply text-3xl font-sans-extrabold text-primary;
+    }
+
+    .subs-screen-count {
+        @apply rounded-full bg-accent/15 px-3 py-1;
+    }
+
+    .subs-screen-count-text {
+        @apply text-sm font-sans-bold text-accent;
+    }
+
+    .subs-search-wrap {
+        @apply mb-4 flex-row items-center gap-3 rounded-2xl border border-border bg-card px-4 py-3;
+    }
+
+    .subs-search-icon {
+        @apply size-5 opacity-50;
+    }
+
+    .subs-search-input {
+        @apply flex-1 text-base font-sans-medium text-primary;
+    }
+
+    .subs-search-clear {
+        @apply size-6 items-center justify-center rounded-full bg-muted;
+    }
+
+    .subs-search-clear-text {
+        @apply text-sm font-sans-bold text-muted-foreground;
+    }
+
+    .subs-empty {
+        @apply mt-10 items-center gap-2;
+    }
+
+    .subs-empty-title {
+        @apply text-lg font-sans-bold text-primary;
+    }
+
+    .subs-empty-subtitle {
+        @apply text-sm font-sans-medium text-muted-foreground;
+    }
 }
