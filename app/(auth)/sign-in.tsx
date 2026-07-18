@@ -1,15 +1,146 @@
-import { View, Text } from 'react-native'
-import React from 'react'
-import { Link } from 'expo-router'
+import "../../global.css"
+import React, { useState } from "react";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
 
-const SignIn = () => {
+import { SafeAreaView } from "react-native-safe-area-context";
+import { Link, useRouter } from "expo-router";
+import { useSignIn } from "@clerk/expo";
+import { styled } from "nativewind";
+import type { Href } from "expo-router";
+
+const StyledSafeAreaView = styled(SafeAreaView);
+const StyledScrollView = styled(ScrollView);
+
+type NavigateArgs = { session: { currentTask?: unknown }; decorateUrl: (path: string) => string };
+
+export default function SignIn() {
+  const router = useRouter();
+  const { signIn, errors, fetchStatus } = useSignIn();
+
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const navigateAfterAuth = ({ session, decorateUrl }: NavigateArgs) => {
+    if (session?.currentTask) return;
+    router.replace(decorateUrl("/") as Href);
+  };
+
+  const handleSignIn = async () => {
+    if (!signIn) return;
+
+    const { error } = await signIn.password({ emailAddress: email, password });
+    if (error) return;
+
+    if (signIn.status === "complete") {
+      await signIn.finalize({ navigate: navigateAfterAuth });
+    }
+  };
+
+  const isFetching = fetchStatus === "fetching";
+  const emailError = errors?.fields?.identifier?.message;
+  const passwordError = errors?.fields?.password?.message;
+  const globalError = !emailError && !passwordError ? errors?.global?.[0]?.message : undefined;
+
   return (
-    <View>
-      <Link href="/(auth)/sign-up">
-        Create Account
-      </Link>
-    </View>
-  )
-}
+    <StyledSafeAreaView className="auth-safe-area">
+      <KeyboardAvoidingView
+        style={{ flex: 1 }}
+        behavior={Platform.OS === "ios" ? "padding" : undefined}
+      >
+        <StyledScrollView
+          className="auth-scroll"
+          contentContainerStyle={{ flexGrow: 1 }}
+          keyboardShouldPersistTaps="handled"
+        >
+          <View className="auth-content">
+            {/* Brand */}
+            <View className="auth-brand-block">
+              <View className="auth-logo-wrap">
+                <View className="auth-logo-mark">
+                  <Text className="auth-logo-mark-text">S</Text>
+                </View>
+                <View>
+                  <Text className="auth-wordmark">Subscrio</Text>
+                  <Text className="auth-wordmark-sub">Subscription Tracker</Text>
+                </View>
+              </View>
 
-export default SignIn
+              <Text className="auth-title">Welcome back</Text>
+              <Text className="auth-subtitle">Sign in to your account to continue</Text>
+            </View>
+
+            {/* Form card */}
+            <View className="auth-card">
+              <View className="auth-form">
+                {/* Email */}
+                <View className="auth-field">
+                  <Text className="auth-label">Email</Text>
+                  <TextInput
+                    className={`auth-input${emailError ? " auth-input-error" : ""}`}
+                    placeholder="you@example.com"
+                    placeholderTextColor="rgba(0,0,0,0.35)"
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    keyboardType="email-address"
+                    textContentType="emailAddress"
+                    value={email}
+                    onChangeText={setEmail}
+                  />
+                  {emailError ? <Text className="auth-error">{emailError}</Text> : null}
+                </View>
+
+                {/* Password */}
+                <View className="auth-field">
+                  <Text className="auth-label">Password</Text>
+                  <TextInput
+                    className={`auth-input${passwordError ? " auth-input-error" : ""}`}
+                    placeholder="••••••••"
+                    placeholderTextColor="rgba(0,0,0,0.35)"
+                    secureTextEntry
+                    textContentType="password"
+                    value={password}
+                    onChangeText={setPassword}
+                  />
+                  {passwordError ? <Text className="auth-error">{passwordError}</Text> : null}
+                </View>
+
+                {/* Global error */}
+                {globalError ? <Text className="auth-error">{globalError}</Text> : null}
+
+                {/* Submit */}
+                <TouchableOpacity
+                  className={`auth-button${isFetching ? " auth-button-disabled" : ""}`}
+                  onPress={handleSignIn}
+                  disabled={isFetching}
+                  activeOpacity={0.8}
+                >
+                  <Text className="auth-button-text">
+                    {isFetching ? "Signing in…" : "Sign In"}
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+
+            {/* Footer */}
+            <View className="auth-link-row">
+              <Text className="auth-link-copy">{"Don't have an account?"}</Text>
+              <Link href="/(auth)/sign-up" asChild>
+                <TouchableOpacity>
+                  <Text className="auth-link">Sign Up</Text>
+                </TouchableOpacity>
+              </Link>
+            </View>
+          </View>
+        </StyledScrollView>
+      </KeyboardAvoidingView>
+    </StyledSafeAreaView>
+  );
+}

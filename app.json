@@ -41,7 +41,8 @@
         }
       ],
       [
-        "expo-font", {
+        "expo-font",
+        {
           "fonts": [
             "../assets/fonts/PlusJakartaSans-Bold.ttf",
             "../assets/fonts/PlusJakartaSans-Light.ttf",
@@ -51,7 +52,9 @@
             "../assets/fonts/PlusJakartaSans-SemiBold.ttf"
           ]
         }
-      ]
+      ],
+      "expo-secure-store",
+      "@clerk/expo"
     ],
     "experiments": {
       "typedRoutes": true,
