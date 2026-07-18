@@ -68,7 +68,7 @@ export default function SignIn() {
                   <Text className="auth-logo-mark-text">S</Text>
                 </View>
                 <View>
-                  <Text className="auth-wordmark">subscrio</Text>
+                  <Text className="auth-wordmark">Subscrio</Text>
                   <Text className="auth-wordmark-sub">Subscription Tracker</Text>
                 </View>
               </View>
