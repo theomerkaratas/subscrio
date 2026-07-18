@@ -15,6 +15,7 @@ import { Link, useRouter } from "expo-router";
 import { useSignUp } from "@clerk/expo";
 import { styled } from "nativewind";
 import type { Href } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 
 const StyledSafeAreaView = styled(SafeAreaView);
 const StyledScrollView = styled(ScrollView);
@@ -24,6 +25,7 @@ type NavigateArgs = { session: { currentTask?: unknown }; decorateUrl: (path: st
 export default function SignUp() {
   const router = useRouter();
   const { signUp, errors, fetchStatus } = useSignUp();
+  const posthog = usePostHog();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -48,6 +50,7 @@ export default function SignUp() {
       signUp.status === "missing_requirements" &&
       signUp.unverifiedFields?.includes("email_address")
     ) {
+      posthog.capture('email_verification_started');
       setVerifying(true);
     }
   };
@@ -58,6 +61,10 @@ export default function SignUp() {
     await signUp.verifications.verifyEmailCode({ code });
 
     if (signUp.status === "complete") {
+      if (signUp.createdSessionId) {
+        posthog.identify(signUp.createdSessionId);
+      }
+      posthog.capture('user_signed_up');
       await signUp.finalize({ navigate: navigateAfterAuth });
     }
   };

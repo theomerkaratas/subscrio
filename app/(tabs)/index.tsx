@@ -12,12 +12,23 @@ import ListHeading from "@/components/ListHeading";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import { useState } from "react";
+import { usePostHog } from "posthog-react-native";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
 
 export default function App() {
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
+    const posthog = usePostHog();
+
+    const handleSubscriptionPress = (id: string, name: string) => {
+        const isExpanding = expandedSubscriptionId !== id;
+        setExpandedSubscriptionId((currentId) => currentId === id ? null : id);
+        if (isExpanding) {
+            posthog.capture('subscription_card_expanded', { subscription_id: id, subscription_name: name });
+        }
+    };
+
     return (
         <SafeAreaView className="flex-1 bg-background p-5">
 
@@ -30,7 +41,10 @@ export default function App() {
                                 <Text className="home-user-name">{HOME_USER.name}</Text>
                             </View>
 
-                            <TouchableOpacity className="w-12 h-12 rounded-full bg-background p-2 justify-center items-center border border-muted">
+                            <TouchableOpacity
+                                className="w-12 h-12 rounded-full bg-background p-2 justify-center items-center border border-muted"
+                                onPress={() => posthog.capture('add_subscription_tapped')}
+                            >
                                 <Image source={icons.add} className="w-6 h-6" />
                             </TouchableOpacity>
                         </View>
@@ -67,10 +81,10 @@ export default function App() {
                 data={HOME_SUBSCRIPTIONS} 
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
-                    <SubscriptionCard 
-                        {...item} 
-                        expanded={expandedSubscriptionId === item.id} 
-                        onPress={() => setExpandedSubscriptionId((currentId) => currentId === item.id ? null : item.id)} 
+                    <SubscriptionCard
+                        {...item}
+                        expanded={expandedSubscriptionId === item.id}
+                        onPress={() => handleSubscriptionPress(item.id, item.name)}
                     />
                 )}
                 extraData={expandedSubscriptionId}

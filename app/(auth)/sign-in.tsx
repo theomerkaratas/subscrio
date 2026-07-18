@@ -15,6 +15,7 @@ import { Link, useRouter } from "expo-router";
 import { useSignIn } from "@clerk/expo";
 import { styled } from "nativewind";
 import type { Href } from "expo-router";
+import { usePostHog } from "posthog-react-native";
 
 const StyledSafeAreaView = styled(SafeAreaView);
 const StyledScrollView = styled(ScrollView);
@@ -24,6 +25,7 @@ type NavigateArgs = { session: { currentTask?: unknown }; decorateUrl: (path: st
 export default function SignIn() {
   const router = useRouter();
   const { signIn, errors, fetchStatus } = useSignIn();
+  const posthog = usePostHog();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -40,6 +42,10 @@ export default function SignIn() {
     if (error) return;
 
     if (signIn.status === "complete") {
+      if (signIn.createdSessionId) {
+        posthog.identify(signIn.createdSessionId);
+      }
+      posthog.capture('user_signed_in');
       await signIn.finalize({ navigate: navigateAfterAuth });
     }
   };
