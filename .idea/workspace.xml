@@ -9,14 +9,8 @@
       <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/insights.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/insights.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/(tabs)/settings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/settings.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/subscriptions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/subscriptions.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CreateSubscriptionModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/CreateSubscriptionModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/ListHeading.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/ListHeading.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/SpendingAreaChart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/SpendingAreaChart.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/SubscriptionCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/SubscriptionCard.tsx" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/context/SubscriptionContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/context/SubscriptionContext.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/global.css" beforeDir="false" afterPath="$PROJECT_DIR$/global.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/type.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/type.d.ts" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/lib/utils.ts" beforeDir="false" afterPath="$PROJECT_DIR$/lib/utils.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -111,7 +105,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "main",
+    "git-widget-placeholder": "dev",
     "javascript.preferred.runtime.type.id": "node",
     "junie.onboarding.icon.badge.shown": "true",
     "node.js.detected.package.eslint": "true",
@@ -141,7 +135,7 @@
       <workItem from="1784023924417" duration="24000" />
       <workItem from="1784449710124" duration="1000000" />
       <workItem from="1784453132675" duration="565000" />
-      <workItem from="1784456498268" duration="1782000" />
+      <workItem from="1784456498268" duration="2536000" />
     </task>
     <servers />
   </component>

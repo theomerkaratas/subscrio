@@ -5,7 +5,7 @@ import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/images";
 import { HOME_USER, HOME_BALANCE, UPCOMING_SUBSCRIPTIONS } from "@/constants/data";
 import { icons } from "@/constants/icons";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, convertAmount } from "@/lib/utils";
 import dayjs from "dayjs";
 import ListHeading from "@/components/ListHeading";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
@@ -30,6 +30,12 @@ export default function App() {
     const handleAddSubscription = (subscription: Subscription) => {
         addSubscription(subscription);
     };
+
+    const upcomingConverted = UPCOMING_SUBSCRIPTIONS.map(sub => ({
+        ...sub,
+        price: convertAmount(sub.price, "USD", currency), // Assuming base for static data is USD
+        currency: currency
+    }));
 
     return (
         <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117] p-5">
@@ -85,7 +91,7 @@ export default function App() {
                             <ListHeading title="Upcoming" />
                             
                             <FlatList
-                                data={UPCOMING_SUBSCRIPTIONS}
+                                data={upcomingConverted}
                                 keyExtractor={(item) => item.id}
                                 renderItem={({ item }) => <UpcomingSubscriptionCard {...item} currency={currency} />}
                                 horizontal

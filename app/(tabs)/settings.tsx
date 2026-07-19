@@ -15,12 +15,7 @@ const SafeAreaView = styled(RNSafeAreaView)
 
 const CURRENCIES = ["USD", "EUR", "TRY", "JPY"]
 
-const EXCHANGE_RATES = [
-  { from: "USD", to: "TRY", rate: 36.31 },
-  { from: "EUR", to: "TRY", rate: 39.73 },
-  { from: "EUR", to: "USD", rate: 1.09 },
-  { from: "USD", to: "JPY", rate: 143.50 },
-]
+import { EXCHANGE_RATES } from "@/lib/utils"
 
 const Settings = () => {
   const { signOut } = useAuth()

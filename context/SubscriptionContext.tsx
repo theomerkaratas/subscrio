@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
 import { HOME_SUBSCRIPTIONS, HOME_BALANCE } from "@/constants/data";
+import { convertAmount } from "@/lib/utils";
 
 interface SubscriptionContextType {
   subscriptions: Subscription[];
@@ -39,6 +40,16 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   };
 
   const updateCurrency = (newCurrency: string) => {
+    if (newCurrency === currency) return;
+
+    setBalance((prev) => convertAmount(prev, currency, newCurrency));
+    setSubscriptions((prev) =>
+      prev.map((s) => ({
+        ...s,
+        price: convertAmount(s.price, currency, newCurrency),
+        currency: newCurrency,
+      }))
+    );
     setCurrency(newCurrency);
   };
 

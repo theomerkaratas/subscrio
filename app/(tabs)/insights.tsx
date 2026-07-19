@@ -7,6 +7,7 @@ import { icons } from '@/constants/icons';
 import InsightsBarChart, { BarChartDataPoint } from '@/components/InsightsBarChart';
 import InsightsHistoryCard, { InsightsHistoryItem } from '@/components/InsightsHistoryCard';
 import SpendingAreaChart from '@/components/SpendingAreaChart';
+import { convertAmount } from '@/lib/utils';
 import { useSubscriptions } from '@/context/SubscriptionContext';
 
 const SafeAreaView = styled(RNSafeAreaView);
@@ -55,6 +56,14 @@ const EXPENSES = {
 const MonthlyInsights = () => {
   const { subscriptions, currency } = useSubscriptions();
 
+  const historyConverted = HISTORY_ITEMS.map(item => ({
+    ...item,
+    price: convertAmount(item.price, "USD", currency),
+    currency
+  }));
+
+  const totalConverted = convertAmount(EXPENSES.total, "USD", currency);
+
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117]">
       {/* ── Header ──────────────────────────────────────────────────── */}
@@ -91,7 +100,7 @@ const MonthlyInsights = () => {
           </View>
           <View className="insights-expenses-right">
             <Text className="insights-expenses-amount">
-              -{new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(EXPENSES.total)}
+              -{new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(totalConverted)}
             </Text>
             <Text className="insights-expenses-change">{EXPENSES.percentChange}</Text>
           </View>
@@ -110,7 +119,7 @@ const MonthlyInsights = () => {
 
         {/* History list */}
         <View className="insights-history-list">
-          {HISTORY_ITEMS.map((item) => (
+          {historyConverted.map((item) => (
             <InsightsHistoryCard key={item.id} {...item} />
           ))}
         </View>
