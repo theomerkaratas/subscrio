@@ -13,6 +13,7 @@ import clsx from "clsx"
 import { useClerkMetadata } from "@/hooks/useClerkMetadata"
 import { EXCHANGE_RATES } from "@/lib/utils"
 import * as ImagePicker from 'expo-image-picker'
+import { usePostHog } from "posthog-react-native"
 
 const SafeAreaView = styled(RNSafeAreaView)
 
@@ -25,6 +26,7 @@ const Settings = () => {
   const { isDark, toggleTheme } = useTheme()
   const { currency, updateCurrency, isDemoMode, setDemoMode } = useSubscriptions()
   const { subscription } = useClerkMetadata()
+  const posthog = usePostHog()
 
   const [firstName, setFirstName] = useState(user?.firstName || "")
   const [lastName, setLastName] = useState(user?.lastName || "")
@@ -83,6 +85,9 @@ const Settings = () => {
         lastName: lastName.trim(),
       });
       await user.reload();
+      posthog.capture('profile_updated', {
+        updated_fields: ['first_name', 'last_name'].filter(Boolean),
+      });
       Alert.alert("Success", "Profile information updated successfully!");
     } catch (err: any) {
       console.error("Error updating profile name:", err);
@@ -101,6 +106,8 @@ const Settings = () => {
         style: "destructive",
         onPress: async () => {
           try {
+            posthog.capture('user_signed_out')
+            posthog.reset()
             await signOut()
             router.replace("/(auth)/sign-in")
           } catch (error) {
@@ -241,7 +248,10 @@ const Settings = () => {
               {CURRENCIES.map((cur) => (
                 <TouchableOpacity
                   key={cur}
-                  onPress={() => updateCurrency(cur)}
+                  onPress={() => {
+                    posthog.capture('currency_changed', { from_currency: currency, to_currency: cur })
+                    updateCurrency(cur)
+                  }}
                   className={clsx(
                     "flex-1 items-center justify-center py-2 rounded-xl border",
                     currency === cur 
@@ -302,7 +312,10 @@ const Settings = () => {
           </View>
           <Switch
             value={isDark}
-            onValueChange={toggleTheme}
+            onValueChange={(val) => {
+              posthog.capture('theme_toggled', { theme: val ? 'dark' : 'light' })
+              toggleTheme()
+            }}
             trackColor={{ false: "rgba(0,0,0,0.15)", true: "#ea7a53" }}
             thumbColor="#ffffff"
             ios_backgroundColor="rgba(0,0,0,0.15)"

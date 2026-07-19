@@ -9,6 +9,7 @@ import * as Haptics from "expo-haptics";
 import { useSubscriptions } from "@/context/SubscriptionContext";
 import { useTheme } from "@/context/ThemeContext";
 import { formatCurrency } from "@/lib/utils";
+import { usePostHog } from "posthog-react-native";
 import UsageDistributionChart from "@/components/UsageDistributionChart";
 import UsageTrendChart from "@/components/UsageTrendChart";
 
@@ -17,6 +18,7 @@ const SafeAreaView = styled(RNSafeAreaView);
 const UsageScreen = () => {
   const { subscriptions, updateSubscription, currency } = useSubscriptions();
   const { isDark } = useTheme();
+  const posthog = usePostHog();
   
   // State for tracking which month is selected for logging/viewing
   const [selectedMonthKey, setSelectedMonthKey] = React.useState(dayjs().format("YYYY-MM"));
@@ -88,6 +90,15 @@ const UsageScreen = () => {
     }
 
     updateSubscription(subId, { usage: nextUsage });
+
+    if (existingVal !== level) {
+      posthog.capture('usage_logged', {
+        subscription_name: sub.name,
+        subscription_category: sub.category ?? null,
+        usage_level: level,
+        month: selectedMonthKey,
+      });
+    }
   };
 
   return (

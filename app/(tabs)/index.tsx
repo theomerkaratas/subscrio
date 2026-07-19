@@ -16,6 +16,7 @@ import AdjustBalanceModal from "@/components/AdjustBalanceModal";
 import { useUser } from "@clerk/expo";
 import { useSubscriptions } from "@/context/SubscriptionContext";
 import { useTheme } from "@/context/ThemeContext";
+import { usePostHog } from "posthog-react-native";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -24,6 +25,7 @@ export default function App() {
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
     const { subscriptions, addSubscription, balance, updateBalance, currency, isDemoMode, cancelSubscription, updateSubscription } = useSubscriptions();
     const { isDark } = useTheme();
+    const posthog = usePostHog();
     const [query, setQuery] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [adjustModalVisible, setAdjustModalVisible] = useState(false);
@@ -63,6 +65,10 @@ export default function App() {
                         setCancellingIds((cur) => [...cur, id]);
                         try {
                             await cancelSubscription(id);
+                            posthog.capture('subscription_cancelled', {
+                                subscription_name: name ?? "Unknown",
+                                is_one_time: isOneTime ?? false,
+                            });
                         } finally {
                             setCancellingIds((cur) => cur.filter((x) => x !== id));
                         }
