@@ -12,63 +12,159 @@ import {
 
 import { SafeAreaView } from "react-native-safe-area-context";
 import { Link, useRouter } from "expo-router";
-import { useSignUp } from "@clerk/expo";
+import { useSignUp } from "@clerk/expo/legacy";
 import { styled } from "nativewind";
-import type { Href } from "expo-router";
+import { useTheme } from "@/context/ThemeContext";
 
 const StyledSafeAreaView = styled(SafeAreaView);
 const StyledScrollView = styled(ScrollView);
 
-type NavigateArgs = { session: { currentTask?: unknown }; decorateUrl: (path: string) => string };
-
 export default function SignUp() {
   const router = useRouter();
-  const { signUp, errors, fetchStatus } = useSignUp();
+  const { isLoaded, signUp, setActive } = useSignUp();
+  const { isDark } = useTheme();
 
+  const [firstName, setFirstName] = useState("");
+  const [lastName, setLastName] = useState("");
+  const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
   const [verifying, setVerifying] = useState(false);
+  const placeholderColor = isDark ? "rgba(255, 255, 255, 0.4)" : "rgba(0, 0, 0, 0.35)";
 
-  const navigateAfterAuth = ({ session, decorateUrl }: NavigateArgs) => {
-    if (session?.currentTask) return;
-    router.replace(decorateUrl("/") as Href);
-  };
+  const [isFetching, setIsFetching] = useState(false);
+  const [firstNameError, setFirstNameError] = useState<string | undefined>(undefined);
+  const [lastNameError, setLastNameError] = useState<string | undefined>(undefined);
+  const [usernameError, setUsernameError] = useState<string | undefined>(undefined);
+  const [emailError, setEmailError] = useState<string | undefined>(undefined);
+  const [passwordError, setPasswordError] = useState<string | undefined>(undefined);
+  const [codeError, setCodeError] = useState<string | undefined>(undefined);
+  const [globalError, setGlobalError] = useState<string | undefined>(undefined);
 
   const handleSignUp = async () => {
-    if (!signUp) return;
+    if (!isLoaded || !signUp) return;
+    setIsFetching(true);
+    setFirstNameError(undefined);
+    setLastNameError(undefined);
+    setUsernameError(undefined);
+    setEmailError(undefined);
+    setPasswordError(undefined);
+    setGlobalError(undefined);
 
-    const { error } = await signUp.password({ emailAddress: email, password });
-    if (error) return;
-
-    // Send email verification code
-    await signUp.verifications.sendEmailCode();
-
-    if (
-      signUp.status === "missing_requirements" &&
-      signUp.unverifiedFields?.includes("email_address")
-    ) {
+    try {
+      await signUp.create({
+        username,
+        emailAddress: email,
+        password,
+        firstName,
+        lastName,
+      });
+      await signUp.prepareEmailAddressVerification({ strategy: "email_code" });
       setVerifying(true);
+    } catch (err: any) {
+      console.error("Sign-up error:", JSON.stringify(err, null, 2));
+      
+      const hasIdentifierConflict = err?.errors?.some(
+        (e: any) => e.code === "form_identifier_exists"
+      );
+
+      if (hasIdentifierConflict) {
+        setGlobalError("Username or email is incorrect, or the password is not suitable.");
+        return;
+      }
+
+      const clerkError = err?.errors?.[0];
+      if (clerkError) {
+        if (clerkError.meta?.paramName === "first_name") {
+          setFirstNameError(clerkError.message);
+        } else if (clerkError.meta?.paramName === "last_name") {
+          setLastNameError(clerkError.message);
+        } else if (clerkError.meta?.paramName === "username") {
+          setUsernameError(clerkError.message);
+        } else if (clerkError.meta?.paramName === "email_address") {
+          setEmailError(clerkError.message);
+        } else if (clerkError.meta?.paramName === "password") {
+          setPasswordError(clerkError.message);
+        } else {
+          setGlobalError(clerkError.message);
+        }
+      } else {
+        setGlobalError("An unexpected error occurred during sign-up.");
+      }
+    } finally {
+      setIsFetching(false);
     }
   };
 
   const handleVerify = async () => {
-    if (!signUp) return;
+    if (!isLoaded || !signUp || !setActive) return;
+    setIsFetching(true);
+    setCodeError(undefined);
+    setGlobalError(undefined);
 
-    await signUp.verifications.verifyEmailCode({ code });
+    try {
+      console.log("Attempting email address verification...");
+      const completeSignUp = await signUp.attemptEmailAddressVerification({
+        code,
+      });
 
-    if (signUp.status === "complete") {
-      await signUp.finalize({ navigate: navigateAfterAuth });
+      console.log("Verification response:", JSON.stringify(completeSignUp, null, 2));
+
+      if (completeSignUp.status === "complete") {
+        await setActive({ session: completeSignUp.createdSessionId });
+        router.replace("/");
+      } else {
+        console.warn("Sign-up status is not complete:", completeSignUp.status);
+        console.warn("Unverified fields:", completeSignUp.unverifiedFields);
+        console.warn("Missing fields:", completeSignUp.missingFields);
+
+        // Build detailed explanation of what is incomplete or missing
+        const missing = completeSignUp.missingFields && completeSignUp.missingFields.length > 0
+          ? `Missing fields: ${completeSignUp.missingFields.join(", ")}`
+          : "";
+        const unverified = completeSignUp.unverifiedFields && completeSignUp.unverifiedFields.length > 0
+          ? `Unverified fields: ${completeSignUp.unverifiedFields.join(", ")}`
+          : "";
+        const details = [missing, unverified].filter(Boolean).join(". ");
+
+        setGlobalError(
+          `Sign-up incomplete (Status: ${completeSignUp.status}). ${details || "Please check your Clerk Dashboard settings."}`
+        );
+      }
+    } catch (err: any) {
+      console.error("Verification failed with error:", err);
+      if (err.errors && err.errors.length > 0) {
+        err.errors.forEach((e: any, index: number) => {
+          console.error(`Clerk Error ${index}: Code=${e.code}, Message=${e.message}, LongMessage=${e.longMessage}`);
+        });
+      }
+
+      const hasIdentifierConflict = err?.errors?.some(
+        (e: any) => e.code === "form_identifier_exists"
+      );
+
+      if (hasIdentifierConflict) {
+        setGlobalError("Username or email is incorrect, or the password is not suitable.");
+        return;
+      }
+
+      const clerkError = err?.errors?.[0];
+      if (clerkError) {
+        if (clerkError.meta?.paramName === "code") {
+          setCodeError(clerkError.longMessage || clerkError.message);
+        } else {
+          setGlobalError(clerkError.longMessage || clerkError.message);
+        }
+      } else if (err.message) {
+        setGlobalError(err.message);
+      } else {
+        setGlobalError("An unexpected error occurred during verification.");
+      }
+    } finally {
+      setIsFetching(false);
     }
   };
-
-  const isFetching = fetchStatus === "fetching";
-  const emailError = errors?.fields?.emailAddress?.message;
-  const passwordError = errors?.fields?.password?.message;
-  const codeError = errors?.fields?.code?.message;
-  const globalError = !emailError && !passwordError && !codeError
-    ? errors?.global?.[0]?.message
-    : undefined;
 
   return (
     <StyledSafeAreaView className="auth-safe-area">
@@ -108,13 +204,54 @@ export default function SignUp() {
             <View className="auth-card">
               {!verifying ? (
                 <View className="auth-form">
+                  {/* First Name */}
+                  <View className="auth-field">
+                    <Text className="auth-label">First Name</Text>
+                    <TextInput
+                      className={`auth-input${firstNameError ? " auth-input-error" : ""}`}
+                      placeholder="Jane"
+                      placeholderTextColor={placeholderColor}
+                      value={firstName}
+                      onChangeText={setFirstName}
+                    />
+                    {firstNameError ? <Text className="auth-error">{firstNameError}</Text> : null}
+                  </View>
+
+                  {/* Last Name */}
+                  <View className="auth-field">
+                    <Text className="auth-label">Last Name</Text>
+                    <TextInput
+                      className={`auth-input${lastNameError ? " auth-input-error" : ""}`}
+                      placeholder="Doe"
+                      placeholderTextColor={placeholderColor}
+                      value={lastName}
+                      onChangeText={setLastName}
+                    />
+                    {lastNameError ? <Text className="auth-error">{lastNameError}</Text> : null}
+                  </View>
+
+                  {/* Username */}
+                  <View className="auth-field">
+                    <Text className="auth-label">Username</Text>
+                    <TextInput
+                      className={`auth-input${usernameError ? " auth-input-error" : ""}`}
+                      placeholder="Choose a username"
+                      placeholderTextColor={placeholderColor}
+                      autoCapitalize="none"
+                      autoCorrect={false}
+                      value={username}
+                      onChangeText={setUsername}
+                    />
+                    {usernameError ? <Text className="auth-error">{usernameError}</Text> : null}
+                  </View>
+
                   {/* Email */}
                   <View className="auth-field">
                     <Text className="auth-label">Email</Text>
                     <TextInput
                       className={`auth-input${emailError ? " auth-input-error" : ""}`}
                       placeholder="you@example.com"
-                      placeholderTextColor="rgba(0,0,0,0.35)"
+                      placeholderTextColor={placeholderColor}
                       autoCapitalize="none"
                       autoCorrect={false}
                       keyboardType="email-address"
@@ -131,7 +268,7 @@ export default function SignUp() {
                     <TextInput
                       className={`auth-input${passwordError ? " auth-input-error" : ""}`}
                       placeholder="Create a password"
-                      placeholderTextColor="rgba(0,0,0,0.35)"
+                      placeholderTextColor={placeholderColor}
                       secureTextEntry
                       textContentType="newPassword"
                       value={password}
@@ -166,7 +303,7 @@ export default function SignUp() {
                     <TextInput
                       className={`auth-input${codeError ? " auth-input-error" : ""}`}
                       placeholder="000000"
-                      placeholderTextColor="rgba(0,0,0,0.35)"
+                      placeholderTextColor={placeholderColor}
                       keyboardType="number-pad"
                       textContentType="oneTimeCode"
                       maxLength={6}
@@ -194,7 +331,20 @@ export default function SignUp() {
                   {/* Resend */}
                   <TouchableOpacity
                     className="auth-secondary-button"
-                    onPress={() => signUp?.verifications.sendEmailCode()}
+                    onPress={() => {
+                      setIsFetching(true);
+                      signUp?.prepareEmailAddressVerification({ strategy: "email_code" })
+                        .catch((err) => {
+                          console.error("Resend error:", err);
+                          const clerkError = err?.errors?.[0];
+                          if (clerkError) {
+                            setGlobalError(clerkError.message);
+                          } else {
+                            setGlobalError("Failed to resend verification code.");
+                          }
+                        })
+                        .finally(() => setIsFetching(false));
+                    }}
                     disabled={isFetching}
                     activeOpacity={0.8}
                   >

@@ -15,6 +15,7 @@ import { Link, useRouter } from "expo-router";
 import { useSignIn } from "@clerk/expo";
 import { styled } from "nativewind";
 import type { Href } from "expo-router";
+import { useTheme } from "@/context/ThemeContext";
 
 const StyledSafeAreaView = styled(SafeAreaView);
 const StyledScrollView = styled(ScrollView);
@@ -24,9 +25,11 @@ type NavigateArgs = { session: { currentTask?: unknown }; decorateUrl: (path: st
 export default function SignIn() {
   const router = useRouter();
   const { signIn, errors, fetchStatus } = useSignIn();
+  const { isDark } = useTheme();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const placeholderColor = isDark ? "rgba(255, 255, 255, 0.4)" : "rgba(0, 0, 0, 0.35)";
 
   const navigateAfterAuth = ({ session, decorateUrl }: NavigateArgs) => {
     if (session?.currentTask) return;
@@ -80,17 +83,16 @@ export default function SignIn() {
             {/* Form card */}
             <View className="auth-card">
               <View className="auth-form">
-                {/* Email */}
+                {/* Email or Username */}
                 <View className="auth-field">
-                  <Text className="auth-label">Email</Text>
+                  <Text className="auth-label">Email or Username</Text>
                   <TextInput
                     className={`auth-input${emailError ? " auth-input-error" : ""}`}
-                    placeholder="you@example.com"
-                    placeholderTextColor="rgba(0,0,0,0.35)"
+                    placeholder="Email or username"
+                    placeholderTextColor={placeholderColor}
                     autoCapitalize="none"
                     autoCorrect={false}
-                    keyboardType="email-address"
-                    textContentType="emailAddress"
+                    textContentType="username"
                     value={email}
                     onChangeText={setEmail}
                   />
@@ -103,7 +105,7 @@ export default function SignIn() {
                   <TextInput
                     className={`auth-input${passwordError ? " auth-input-error" : ""}`}
                     placeholder="••••••••"
-                    placeholderTextColor="rgba(0,0,0,0.35)"
+                    placeholderTextColor={placeholderColor}
                     secureTextEntry
                     textContentType="password"
                     value={password}

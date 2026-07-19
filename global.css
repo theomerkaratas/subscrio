@@ -270,7 +270,7 @@
     }
 
     .auth-logo-mark-text {
-        @apply text-2xl font-sans-extrabold text-background;
+        @apply text-2xl font-sans-extrabold text-[#fff9e3];
     }
 
     .auth-wordmark {

@@ -1,5 +1,5 @@
 import "../global.css"
-import { SplashScreen, Stack } from "expo-router";
+import { SplashScreen, Stack, useRouter, useSegments } from "expo-router";
 import { useFonts } from "expo-font";
 import { useEffect } from "react";
 import { ClerkProvider, useAuth } from "@clerk/expo";
@@ -16,7 +16,10 @@ if (!publishableKey) {
 }
 
 function InitialLayout() {
-  const { isLoaded } = useAuth();
+  const { isLoaded, isSignedIn } = useAuth();
+  const segments = useSegments();
+  const router = useRouter();
+
   const [fontsLoaded] = useFonts({
     'sans-bold': require('../assets/fonts/PlusJakartaSans-Bold.ttf'),
     'sans-light': require('../assets/fonts/PlusJakartaSans-Light.ttf'),
@@ -25,6 +28,22 @@ function InitialLayout() {
     'sans-medium': require('../assets/fonts/PlusJakartaSans-Medium.ttf'),
     'sans-semibold': require('../assets/fonts/PlusJakartaSans-SemiBold.ttf')
   });
+
+  useEffect(() => {
+    if (!isLoaded || !fontsLoaded) return;
+
+    const inAuthGroup = segments[0] === "(auth)";
+
+    if (isSignedIn) {
+      if (inAuthGroup) {
+        router.replace("/(tabs)");
+      }
+    } else {
+      if (!inAuthGroup) {
+        router.replace("/(auth)/sign-in");
+      }
+    }
+  }, [isSignedIn, isLoaded, fontsLoaded, segments, router]);
 
   useEffect(() => {
     if (fontsLoaded && isLoaded) {
