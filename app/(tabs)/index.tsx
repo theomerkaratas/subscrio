@@ -28,7 +28,7 @@ export default function App() {
     };
 
     return (
-        <SafeAreaView className="flex-1 bg-background p-5">
+        <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117] p-5">
 
             <FlatList
                 ListHeaderComponent={() => (
@@ -45,7 +45,7 @@ export default function App() {
                             </View>
 
                             <Pressable
-                                className="w-12 h-12 rounded-full bg-background p-2 justify-center items-center border border-muted"
+                                className="w-12 h-12 rounded-full bg-background dark:bg-[#1a1d27] p-2 justify-center items-center border border-muted dark:border-[rgba(255,255,255,0.1)]"
                                 onPress={() => setModalVisible(true)}
                                 accessibilityRole="button"
                                 accessibilityLabel="Add subscription"

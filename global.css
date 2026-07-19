@@ -782,3 +782,120 @@
         @apply text-xs font-sans-medium text-muted-foreground;
     }
 }
+
+/* ─── Dark Mode Overrides ─────────────────────────────────────────────────── */
+/*
+ * NativeWind v4 respects Appearance.setColorScheme() via @media (prefers-color-scheme).
+ * Dark palette:
+ *   background      #0f1117
+ *   card            #1a1d27
+ *   muted           #252836
+ *   primary         #f0ede4
+ *   border          rgba(255,255,255,0.1)
+ *   muted-foreground rgba(255,255,255,0.55)
+ */
+
+@media (prefers-color-scheme: dark) {
+    :root {
+        --color-background: #0f1117;
+        --color-foreground: #f0ede4;
+        --color-card: #1a1d27;
+        --color-muted: #252836;
+        --color-muted-foreground: rgba(255,255,255,0.55);
+        --color-primary: #f0ede4;
+        --color-accent: #ea7a53;
+        --color-border: rgba(255,255,255,0.1);
+    }
+    /* ── Upcoming subscription card ─── */
+    .upcoming-card { @apply border-[rgba(255,255,255,0.1)] bg-[#0f1117]; }
+    /* Logo chip stays cream (bg-muted) so brand logos read the same as light mode */
+    .upcoming-price,
+    .upcoming-name { @apply text-[#f0ede4]; }
+    .upcoming-meta { @apply text-[rgba(255,255,255,0.55)]; }
+
+    /* ── Subscription card ─── */
+    .sub-card { @apply border-[rgba(255,255,255,0.1)]; }
+    /* Logo chip stays cream (bg-muted) so brand logos read the same as light mode */
+    .sub-title,
+    .sub-price,
+    .sub-value { @apply text-[#f0ede4]; }
+    .sub-meta,
+    .sub-billing,
+    .sub-label { @apply text-[rgba(255,255,255,0.55)]; }
+    .sub-cancel { @apply bg-[#f0ede4]; }
+    .sub-cancel-text { @apply text-[#0f1117]; }
+
+    /* ── List heading ─── */
+    .list-title { @apply text-[#f0ede4]; }
+    .list-action { @apply border-[rgba(255,255,255,0.15)]; }
+    .list-action-text { @apply text-[#f0ede4]; }
+
+    /* ── Auth screens ─── */
+    .auth-card { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }
+    .auth-label,
+    .auth-title,
+    .auth-wordmark { @apply text-[#f0ede4]; }
+    .auth-input { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27] text-[#f0ede4]; }
+    .auth-button-text { @apply text-[#0f1117]; }
+    .auth-helper,
+    .auth-subtitle,
+    .auth-wordmark-sub,
+    .auth-link-copy,
+    .auth-divider-text { @apply text-[rgba(255,255,255,0.55)]; }
+    .auth-divider-line { @apply bg-[rgba(255,255,255,0.1)]; }
+
+    /* ── Modal ─── */
+    .modal-header { @apply border-[rgba(255,255,255,0.1)]; }
+    .modal-title { @apply text-[#f0ede4]; }
+    .modal-close { @apply bg-[#252836]; }
+    .modal-close-text { @apply text-[#f0ede4]; }
+
+    /* ── Picker & category chips ─── */
+    .picker-option { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }
+    .picker-option-text { @apply text-[rgba(255,255,255,0.55)]; }
+    .category-chip { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }
+    .category-chip-text { @apply text-[rgba(255,255,255,0.55)]; }
+
+    /* ── Subscriptions screen ─── */
+    .subs-screen-title { @apply text-[#f0ede4]; }
+    .subs-search-wrap { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }
+    .subs-search-input { @apply text-[#f0ede4]; }
+    .subs-search-clear { @apply bg-[#252836]; }
+    .subs-search-clear-text { @apply text-[rgba(255,255,255,0.55)]; }
+    .subs-empty-title { @apply text-[#f0ede4]; }
+    .subs-empty-subtitle { @apply text-[rgba(255,255,255,0.55)]; }
+
+    /* ── Insights screen ─── */
+    .insights-header-btn { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }
+    .insights-header-title { @apply text-[#f0ede4]; }
+    .insights-section-title { @apply text-[#f0ede4]; }
+    .insights-view-all-btn { @apply border-[rgba(255,255,255,0.15)]; }
+    .insights-view-all-text { @apply text-[#f0ede4]; }
+    /*
+     * Chart sections (bar chart + spending-over-time area chart) stay in their
+     * light styling — cream card, dark axis labels/bars/grid — so the inline
+     * brand/category fill colors render on their intended background. Do NOT
+     * add dark overrides for .insights-chart-card / .insights-area-chart-card
+     * or their inner axis-label/bar/bubble/breakdown/legend selectors.
+     */
+    .insights-expenses-card { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }
+    .insights-expenses-label,
+    .insights-expenses-amount { @apply text-[#f0ede4]; }
+    .insights-expenses-date,
+    .insights-expenses-change { @apply text-[rgba(255,255,255,0.55)]; }
+    /* Logo chip stays cream (bg-muted) so brand logos read the same as light mode */
+    .insights-history-name,
+    .insights-history-price { @apply text-[#f0ede4]; }
+    /* Keep only the logo chips light so brand logos stay readable */
+    .upcoming-icon-wrap,
+    .sub-icon-wrap,
+    .insights-history-icon-wrap {
+        background-color: #f6eecf;
+    }
+    .insights-history-date,
+    .insights-history-billing { @apply text-[rgba(255,255,255,0.55)]; }
+    /* Area-chart breakdown/legend/active markers stay light (see chart note above) */
+
+    /* ── Home empty state ─── */
+    .home-empty-state { @apply text-[rgba(255,255,255,0.55)]; }
+}
