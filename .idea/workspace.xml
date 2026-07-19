@@ -6,24 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="970898ea-00e6-4dd8-b097-04cbffefb772" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.expo/types/router.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/.expo/types/router.d.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/index.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/index.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/insights.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/insights.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/settings.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/settings.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/(tabs)/subscriptions.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/app/(tabs)/subscriptions.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/CreateSubscriptionModal.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/CreateSubscriptionModal.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/InsightsBarChart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/InsightsBarChart.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/InsightsHistoryCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/InsightsHistoryCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/SpendingAreaChart.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/SpendingAreaChart.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/SubscriptionCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/SubscriptionCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/components/UpcomingSubscriptionCard.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/components/UpcomingSubscriptionCard.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/constants/data.ts" beforeDir="false" afterPath="$PROJECT_DIR$/constants/data.ts" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/context/SubscriptionContext.tsx" beforeDir="false" afterPath="$PROJECT_DIR$/context/SubscriptionContext.tsx" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/global.css" beforeDir="false" afterPath="$PROJECT_DIR$/global.css" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/node_modules/.package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/node_modules/.package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/type.d.ts" beforeDir="false" afterPath="$PROJECT_DIR$/type.d.ts" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -118,7 +100,7 @@
     "RunOnceActivity.typescript.service.memoryLimit.init": "true",
     "codeWithMe.voiceChat.enabledByDefault": "false",
     "com.intellij.ml.llm.matterhorn.ej.ui.settings.DefaultModelSelectionForGA.v1": "true",
-    "git-widget-placeholder": "poc",
+    "git-widget-placeholder": "usage-screen",
     "javascript.preferred.runtime.type.id": "node",
     "junie.onboarding.icon.badge.shown": "true",
     "junie.plugin.stays.banner.dismissed": "true",
@@ -151,6 +133,7 @@
       <workItem from="1784453132675" duration="565000" />
       <workItem from="1784456498268" duration="2536000" />
       <workItem from="1784460617182" duration="4435000" />
+      <workItem from="1784465958949" duration="1710000" />
     </task>
     <servers />
   </component>

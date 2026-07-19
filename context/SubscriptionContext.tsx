@@ -60,10 +60,26 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const setDemoMode = (enabled: boolean) => {
     setIsDemoMode(enabled);
     if (enabled) {
-      setSubscriptions(DUMMY_SUBSCRIPTIONS);
       const now = dayjs();
+      const levels: ("low" | "medium" | "high")[] = ["low", "medium", "high"];
+      
+      const randomizedDummySubs = DUMMY_SUBSCRIPTIONS.map(sub => {
+        const usage: Record<string, "low" | "medium" | "high"> = {};
+        // Randomize usage across the last 12 months
+        for (let i = 0; i < 12; i++) {
+          const monthKey = now.subtract(i, "month").format("YYYY-MM");
+          const randomLevel = levels[Math.floor(Math.random() * levels.length)];
+          usage[monthKey] = randomLevel;
+        }
+        return {
+          ...sub,
+          usage
+        };
+      });
+
+      setSubscriptions(randomizedDummySubs);
       const monthKey = now.format('YYYY-MM');
-      const totalAmount = DUMMY_SUBSCRIPTIONS.reduce((acc, sub) => {
+      const totalAmount = randomizedDummySubs.reduce((acc, sub) => {
         let price = sub.price;
         if (sub.billing === "One-time") {
            // For demo purposes, we show it if it's in the current month or future, 

@@ -2,7 +2,7 @@ import { icons } from "./icons";
 
 export const tabs: AppTab[] = [
     { name: "index", title: "Home", icon: icons.home },
-    { name: "subscriptions", title: "Subscriptions", icon: icons.wallet },
+    { name: "usage", title: "Usage", icon: icons.wallet },
     { name: "insights", title: "Insights", icon: icons.activity },
     { name: "settings", title: "Settings", icon: icons.setting },
 ];
@@ -47,6 +47,20 @@ export const DUMMY_SUBSCRIPTIONS: Subscription[] = [
             "2026-10": "skip",
             "2026-11": "skip",
             "2026-12": "skip",
+        },
+        usage: {
+            "2025-08": "high",
+            "2025-09": "medium",
+            "2025-10": "high",
+            "2025-11": "high",
+            "2025-12": "medium",
+            "2026-01": "low",
+            "2026-02": "medium",
+            "2026-03": "high",
+            "2026-04": "medium",
+            "2026-05": "high",
+            "2026-06": "high",
+            "2026-07": "high",
         }
     },
     {
@@ -61,6 +75,9 @@ export const DUMMY_SUBSCRIPTIONS: Subscription[] = [
         renewalDate: "2026-11-15T10:00:00.000Z",
         startDate: "2026-11-15T10:00:00.000Z",
         color: "#4285F4",
+        usage: {
+            "2026-07": "medium"
+        }
     },
     {
         id: "netflix",
@@ -74,6 +91,20 @@ export const DUMMY_SUBSCRIPTIONS: Subscription[] = [
         startDate: "2024-05-12T10:00:00.000Z",
         renewalDate: new Date(new Date().getFullYear(), new Date().getMonth(), 12).toISOString(),
         color: "#E50914",
+        usage: {
+            "2025-08": "high",
+            "2025-09": "high",
+            "2025-10": "high",
+            "2025-11": "medium",
+            "2025-12": "high",
+            "2026-01": "high",
+            "2026-02": "medium",
+            "2026-03": "medium",
+            "2026-04": "high",
+            "2026-05": "high",
+            "2026-06": "high",
+            "2026-07": "medium",
+        }
     },
     {
         id: "github-pro",
@@ -89,6 +120,20 @@ export const DUMMY_SUBSCRIPTIONS: Subscription[] = [
         billing: "Monthly",
         renewalDate: new Date(new Date().getFullYear(), new Date().getMonth(), 24).toISOString(),
         color: "#e8def8",
+        usage: {
+            "2025-08": "medium",
+            "2025-09": "medium",
+            "2025-10": "low",
+            "2025-11": "medium",
+            "2025-12": "low",
+            "2026-01": "medium",
+            "2026-02": "high",
+            "2026-03": "high",
+            "2026-04": "medium",
+            "2026-05": "medium",
+            "2026-06": "medium",
+            "2026-07": "high",
+        }
     },
     {
         id: "claude-pro",
@@ -104,6 +149,20 @@ export const DUMMY_SUBSCRIPTIONS: Subscription[] = [
         billing: "Monthly",
         renewalDate: new Date(new Date().getFullYear(), new Date().getMonth(), 27).toISOString(),
         color: "#b8d4e3",
+        usage: {
+            "2025-08": "high",
+            "2025-09": "high",
+            "2025-10": "high",
+            "2025-11": "high",
+            "2025-12": "high",
+            "2026-01": "medium",
+            "2026-02": "high",
+            "2026-03": "high",
+            "2026-04": "high",
+            "2026-05": "high",
+            "2026-06": "high",
+            "2026-07": "high",
+        }
     },
     {
         id: "spotify-family",
@@ -122,6 +181,20 @@ export const DUMMY_SUBSCRIPTIONS: Subscription[] = [
         monthlyAdjustments: {
             "2026-06": 18.99,
             "2026-07": 18.99,
+        },
+        usage: {
+            "2025-08": "high",
+            "2025-09": "high",
+            "2025-10": "medium",
+            "2025-11": "high",
+            "2025-12": "high",
+            "2026-01": "high",
+            "2026-02": "high",
+            "2026-03": "high",
+            "2026-04": "high",
+            "2026-05": "medium",
+            "2026-06": "high",
+            "2026-07": "high",
         }
     },
     {
@@ -138,5 +211,19 @@ export const DUMMY_SUBSCRIPTIONS: Subscription[] = [
         billing: "Monthly",
         renewalDate: new Date(new Date().getFullYear(), new Date().getMonth() + 1, 1).toISOString(),
         color: "#F24E1E",
+        usage: {
+            "2025-08": "low",
+            "2025-09": "medium",
+            "2025-10": "medium",
+            "2025-11": "low",
+            "2025-12": "low",
+            "2026-01": "medium",
+            "2026-02": "medium",
+            "2026-03": "low",
+            "2026-04": "low",
+            "2026-05": "medium",
+            "2026-06": "medium",
+            "2026-07": "low",
+        }
     }
 ];
