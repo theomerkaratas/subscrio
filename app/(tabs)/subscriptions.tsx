@@ -19,13 +19,11 @@ const Subscriptions = () => {
 
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [subscriptionToEdit, setSubscriptionToEdit] = useState<Subscription | null>(null);
-  const [editField, setEditField] = useState<EditField | undefined>(undefined);
 
-  const handleEdit = (subId: string, field?: EditField) => {
+  const handleEdit = (subId: string) => {
     const sub = subscriptions.find(s => s.id === subId);
     if (sub) {
       setSubscriptionToEdit(sub);
-      setEditField(field);
       setEditModalVisible(true);
     }
   };
@@ -34,7 +32,6 @@ const Subscriptions = () => {
     updateSubscription(updatedSub.id, updatedSub);
     setEditModalVisible(false);
     setSubscriptionToEdit(null);
-    setEditField(undefined);
   };
 
   const handleCancel = (id: string, name?: string, isOneTime?: boolean) => {
@@ -125,9 +122,7 @@ const Subscriptions = () => {
             }
             onCancelPress={() => handleCancel(item.id, item.name, item.billing === "One-time")}
             isCancelling={cancellingIds.includes(item.id)}
-            onChangePayment={() => handleEdit(item.id, "payment")}
-            onChangeCategory={() => handleEdit(item.id, "category")}
-            onChangeStatus={() => handleEdit(item.id, "status")}
+            onEdit={() => handleEdit(item.id)}
           />
         )}
         extraData={expandedSubscriptionId}
@@ -151,11 +146,9 @@ const Subscriptions = () => {
         onClose={() => {
           setEditModalVisible(false);
           setSubscriptionToEdit(null);
-          setEditField(undefined);
         }}
         onSubmit={handleUpdateSubscription}
         subscription={subscriptionToEdit || undefined}
-        editField={editField}
       />
     </SafeAreaView>
   );

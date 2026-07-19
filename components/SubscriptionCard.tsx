@@ -4,7 +4,7 @@ import { useTheme } from '@/context/ThemeContext'
 import { formatCurrency, formatStatusLabel, formatSubscriptionDateTime } from '@/lib/utils'
 import clsx from 'clsx'
 
-const SubscriptionCard = ({ name, price, currency, icon, billing, color, category, plan, renewalDate, expanded, onPress, paymentMethod, startDate, status, onCancelPress, isCancelling, onChangePayment, onChangeCategory, onChangeStatus }: SubscriptionCardProps) => {
+const SubscriptionCard = ({ name, price, currency, icon, billing, color, category, plan, renewalDate, expanded, onPress, paymentMethod, startDate, status, onCancelPress, isCancelling, onEdit }: SubscriptionCardProps) => {
     const { isDark } = useTheme();
   return (
         <Pressable
@@ -38,15 +38,6 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
                     <View className="sub-details">
                         <View className="sub-row">
                             <View className="sub-row-copy">
-                                <Text className="sub-label">Payment:</Text>
-                                <Text className="sub-value" numberOfLines={1} ellipsizeMode="tail">{paymentMethod?.trim() || 'Not provided'}</Text>
-                            </View>
-                            <TouchableOpacity className="list-action" onPress={onChangePayment} accessibilityRole="button">
-                                <Text className="list-action-text">Edit</Text>
-                            </TouchableOpacity>
-                        </View>
-                        <View className="sub-row">
-                            <View className="sub-row-copy">
                                 <Text className="sub-label">Type:</Text>
                                 <Text className="sub-value" numberOfLines={1} ellipsizeMode="tail">{billing || 'Not specified'}</Text>
                             </View>
@@ -56,9 +47,6 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
                                 <Text className="sub-label">Category:</Text>
                                 <Text className="sub-value" numberOfLines={1} ellipsizeMode="tail">{category?.trim() || plan?.trim() || 'Not specified'}</Text>
                             </View>
-                            <TouchableOpacity className="list-action" onPress={onChangeCategory} accessibilityRole="button">
-                                <Text className="list-action-text">Edit</Text>
-                            </TouchableOpacity>
                         </View>
                         <View className="sub-row">
                             <View className="sub-row-copy">
@@ -77,19 +65,23 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
                                 <Text className="sub-label">Status:</Text>
                                 <Text className="sub-value" numberOfLines={1} ellipsizeMode="tail">{status ? formatStatusLabel(status) : 'Unknown'}</Text>
                             </View>
-                            <TouchableOpacity className="list-action" onPress={onChangeStatus} accessibilityRole="button">
-                                <Text className="list-action-text">Change</Text>
-                            </TouchableOpacity>
                         </View>
-                        <View className="mt-4">
+                        <View className="mt-4 flex-row gap-3">
+                            <TouchableOpacity
+                                onPress={onEdit}
+                                activeOpacity={0.7}
+                                className="flex-1 items-center justify-center rounded-full bg-accent py-4"
+                            >
+                                <Text className="font-sans-bold text-white">Edit</Text>
+                            </TouchableOpacity>
                             <TouchableOpacity
                                 onPress={onCancelPress}
                                 activeOpacity={0.9}
                                 disabled={isCancelling || status === 'cancelled'}
-                                className={clsx('sub-cancel w-full items-center justify-center px-6', status === 'cancelled' && 'sub-cancel-disabled')}
+                                className={clsx('flex-1 items-center justify-center rounded-full bg-primary py-4', status === 'cancelled' && 'sub-cancel-disabled')}
                             >
                                 <Text className="sub-cancel-text">
-                                    {status === 'cancelled' ? 'Cancelled' : isCancelling ? 'Cancelling...' : billing === "One-time" ? 'Remove' : 'Cancel Subscription'}
+                                    {status === 'cancelled' ? 'Cancelled' : isCancelling ? 'Cancelling...' : billing === "One-time" ? 'Remove' : 'Cancel'}
                                 </Text>
                             </TouchableOpacity>
                         </View>

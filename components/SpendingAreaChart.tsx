@@ -193,6 +193,31 @@ const SpendingBarChart = ({ subscriptions }: SpendingBarChartProps) => {
         nestedScrollEnabled
       >
         <View style={{ width: COL_WIDTH * NUM_MONTHS, height: CHART_HEIGHT + 30 }}>
+          {/* ── Background Grid Lines ────────────────────────────────── */}
+          <View 
+            pointerEvents="none"
+            style={{ 
+              position: 'absolute', 
+              top: 0, 
+              left: 0, 
+              width: COL_WIDTH * NUM_MONTHS, 
+              height: CHART_HEIGHT, 
+              justifyContent: 'space-between',
+              zIndex: 0
+            }}
+          >
+            {[0, 1, 2, 3].map((i) => (
+              <View 
+                key={i} 
+                className="bg-black/5 dark:bg-white/10"
+                style={{ 
+                  height: 1, 
+                  width: '100%',
+                }} 
+              />
+            ))}
+            <View className="bg-black/10 dark:bg-white/20" style={{ height: 1, width: '100%' }} />
+          </View>
 
           {/* ── Chart columns ─────────── */}
           <View style={{ height: CHART_HEIGHT, flexDirection: 'row', alignItems: 'flex-end' }}>

@@ -14,6 +14,7 @@ import { clsx } from "clsx";
 import dayjs from "dayjs";
 import { icons } from "@/constants/icons";
 import { useSubscriptions } from "@/context/SubscriptionContext";
+import { useTheme } from "@/context/ThemeContext";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -25,7 +26,6 @@ interface Props {
   onClose: () => void;
   onSubmit: (subscription: Subscription) => void;
   subscription?: Subscription; // Added for editing
-  editField?: EditField; // Added to only show specific field when editing
 }
 
 // ─── Constants ───────────────────────────────────────────────────────────────
@@ -73,9 +73,12 @@ const EMPTY_FORM = {
   status: "active",
 };
 
-const CreateSubscriptionModal = ({ visible, onClose, onSubmit, subscription, editField }: Props) => {
+const CreateSubscriptionModal = ({ visible, onClose, onSubmit, subscription }: Props) => {
   const { currency } = useSubscriptions();
+  const { isDark } = useTheme();
   const [form, setForm] = useState(EMPTY_FORM);
+
+  const placeholderColor = isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)";
   const [errors, setErrors] = useState<{ name?: string; price?: string }>({});
 
   // Initialize form when subscription changes or modal becomes visible
@@ -154,13 +157,10 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit, subscription, edi
 
   const getTitle = () => {
     if (!subscription) return "New Payment";
-    if (editField === "payment") return "Edit Payment";
-    if (editField === "category") return "Edit Category";
-    if (editField === "status") return "Edit Status";
-    return "Edit Payment";
+    return "Edit Subscription";
   };
 
-  const showAll = !subscription;
+  const showAll = true;
 
   // ── Render ──────────────────────────────────────────────────────────────
 
@@ -196,158 +196,146 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit, subscription, edi
           className="modal-body"
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
-          contentContainerStyle={{ paddingBottom: 32 }}
+          contentContainerStyle={{ paddingBottom: 16 }}
         >
           {/* ── Name ──────────────────────────────────────────────────── */}
-          {(showAll || editField === "payment") && (
-            <View className="auth-field">
-              <Text className="auth-label">Name</Text>
-              <TextInput
-                className={clsx("auth-input", errors.name && "auth-input-error")}
-                placeholder="e.g. Spotify"
-                placeholderTextColor="rgba(0,0,0,0.35)"
-                value={form.name}
-                onChangeText={(v) => {
-                  setForm((f) => ({ ...f, name: v }));
-                  if (errors.name) setErrors((e) => ({ ...e, name: undefined }));
-                }}
-                autoCapitalize="words"
-                returnKeyType="next"
-              />
-              {errors.name ? (
-                <Text className="auth-error">{errors.name}</Text>
-              ) : null}
-            </View>
-          )}
+          <View className="auth-field">
+            <Text className="auth-label">Name</Text>
+            <TextInput
+              className={clsx("auth-input", errors.name && "auth-input-error")}
+              placeholder="e.g. Spotify"
+              placeholderTextColor={placeholderColor}
+              value={form.name}
+              onChangeText={(v) => {
+                setForm((f) => ({ ...f, name: v }));
+                if (errors.name) setErrors((e) => ({ ...e, name: undefined }));
+              }}
+              autoCapitalize="words"
+              returnKeyType="next"
+            />
+            {errors.name ? (
+              <Text className="auth-error">{errors.name}</Text>
+            ) : null}
+          </View>
 
           {/* ── Domain (for dynamic logo) ──────────────────────────────── */}
-          {(showAll || editField === "payment") && (
-            <View className="auth-field">
-              <Text className="auth-label">Domain (Optional, for logo)</Text>
-              <TextInput
-                className="auth-input"
-                placeholder="e.g. spotify.com"
-                placeholderTextColor="rgba(0,0,0,0.35)"
-                value={form.domain}
-                onChangeText={(v) => setForm((f) => ({ ...f, domain: v }))}
-                autoCapitalize="none"
-                keyboardType="url"
-                returnKeyType="next"
-              />
-            </View>
-          )}
+          <View className="auth-field">
+            <Text className="auth-label">Domain (Optional, for logo)</Text>
+            <TextInput
+              className="auth-input"
+              placeholder="e.g. spotify.com"
+              placeholderTextColor={placeholderColor}
+              value={form.domain}
+              onChangeText={(v) => setForm((f) => ({ ...f, domain: v }))}
+              autoCapitalize="none"
+              keyboardType="url"
+              returnKeyType="next"
+            />
+          </View>
 
           {/* ── Price ─────────────────────────────────────────────────── */}
-          {(showAll || editField === "payment") && (
-            <View className="auth-field">
-              <Text className="auth-label">Price (USD)</Text>
-              <TextInput
-                className={clsx("auth-input", errors.price && "auth-input-error")}
-                placeholder="e.g. 9.99"
-                placeholderTextColor="rgba(0,0,0,0.35)"
-                value={form.price}
-                onChangeText={(v) => {
-                  setForm((f) => ({ ...f, price: v }));
-                  if (errors.price)
-                    setErrors((e) => ({ ...e, price: undefined }));
-                }}
-                keyboardType="decimal-pad"
-                returnKeyType="done"
-              />
-              {errors.price ? (
-                <Text className="auth-error">{errors.price}</Text>
-              ) : null}
-            </View>
-          )}
+          <View className="auth-field">
+            <Text className="auth-label">Price (USD)</Text>
+            <TextInput
+              className={clsx("auth-input", errors.price && "auth-input-error")}
+              placeholder="e.g. 9.99"
+              placeholderTextColor={placeholderColor}
+              value={form.price}
+              onChangeText={(v) => {
+                setForm((f) => ({ ...f, price: v }));
+                if (errors.price)
+                  setErrors((e) => ({ ...e, price: undefined }));
+              }}
+              keyboardType="decimal-pad"
+              returnKeyType="done"
+            />
+            {errors.price ? (
+              <Text className="auth-error">{errors.price}</Text>
+            ) : null}
+          </View>
 
           {/* ── Billing Frequency ─────────────────────────────────────── */}
-          {(showAll || editField === "payment") && (
-            <View className="auth-field">
-              <Text className="auth-label">Billing Frequency</Text>
-              <View className="picker-row">
-                {(["One-time", "Monthly", "Yearly"] as Frequency[]).map((freq) => (
-                  <TouchableOpacity
-                    key={freq}
+          <View className="auth-field">
+            <Text className="auth-label">Billing Frequency</Text>
+            <View className="picker-row">
+              {(["One-time", "Monthly", "Yearly"] as Frequency[]).map((freq) => (
+                <TouchableOpacity
+                  key={freq}
+                  className={clsx(
+                    "picker-option",
+                    form.frequency === freq && "picker-option-active"
+                  )}
+                  onPress={() => setForm((f) => ({ ...f, frequency: freq }))}
+                >
+                  <Text
                     className={clsx(
-                      "picker-option",
-                      form.frequency === freq && "picker-option-active"
+                      "picker-option-text",
+                      form.frequency === freq && "picker-option-text-active"
                     )}
-                    onPress={() => setForm((f) => ({ ...f, frequency: freq }))}
                   >
-                    <Text
-                      className={clsx(
-                        "picker-option-text",
-                        form.frequency === freq && "picker-option-text-active"
-                      )}
-                    >
-                      {freq}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+                    {freq}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
-          )}
+          </View>
 
           {/* ── Status (Added for editing) ────────────────────────────── */}
-          {editField === "status" && (
-            <View className="auth-field">
-              <Text className="auth-label">Status</Text>
-              <View className="picker-row">
-                {(["active", "paused", "cancelled"] as const).map((status) => (
-                  <TouchableOpacity
-                    key={status}
+          <View className="auth-field">
+            <Text className="auth-label">Status</Text>
+            <View className="picker-row">
+              {(["active", "paused", "cancelled"] as const).map((status) => (
+                <TouchableOpacity
+                  key={status}
+                  className={clsx(
+                    "picker-option",
+                    form.status === status && "picker-option-active"
+                  )}
+                  onPress={() => setForm((f) => ({ ...f, status }))}
+                >
+                  <Text
                     className={clsx(
-                      "picker-option",
-                      form.status === status && "picker-option-active"
+                      "picker-option-text",
+                      form.status === status && "picker-option-text-active"
                     )}
-                    onPress={() => setForm((f) => ({ ...f, status }))}
                   >
-                    <Text
-                      className={clsx(
-                        "picker-option-text",
-                        form.status === status && "picker-option-text-active"
-                      )}
-                    >
-                      {status.charAt(0).toUpperCase() + status.slice(1)}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
-          )}
+          </View>
 
           {/* ── Category ──────────────────────────────────────────────── */}
-          {(showAll || editField === "category") && (
-            <View className="auth-field">
-              <Text className="auth-label">Category</Text>
-              <View className="category-scroll">
-                {CATEGORIES.map((cat) => (
-                  <TouchableOpacity
-                    key={cat}
+          <View className="auth-field">
+            <Text className="auth-label">Category</Text>
+            <View className="category-scroll">
+              {CATEGORIES.map((cat) => (
+                <TouchableOpacity
+                  key={cat}
+                  className={clsx(
+                    "category-chip",
+                    form.category === cat && "category-chip-active"
+                  )}
+                  onPress={() =>
+                    setForm((f) => ({
+                      ...f,
+                      category: f.category === cat ? "" : cat,
+                    }))
+                  }
+                >
+                  <Text
                     className={clsx(
-                      "category-chip",
-                      form.category === cat && "category-chip-active"
+                      "category-chip-text",
+                      form.category === cat && "category-chip-text-active"
                     )}
-                    onPress={() =>
-                      setForm((f) => ({
-                        ...f,
-                        category: f.category === cat ? "" : cat,
-                      }))
-                    }
                   >
-                    <Text
-                      className={clsx(
-                        "category-chip-text",
-                        form.category === cat && "category-chip-text-active"
-                      )}
-                    >
-                      {cat}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </View>
+                    {cat}
+                  </Text>
+                </TouchableOpacity>
+              ))}
             </View>
-          )}
+          </View>
 
           {/* ── Submit ────────────────────────────────────────────────── */}
           <TouchableOpacity

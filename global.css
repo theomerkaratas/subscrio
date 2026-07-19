@@ -298,15 +298,15 @@
     }
 
     .auth-field {
-        @apply gap-2;
+        @apply gap-1 mb-4;
     }
 
     .auth-label {
-        @apply text-sm font-sans-semibold text-primary;
+        @apply text-sm font-sans-semibold text-primary ml-1;
     }
 
     .auth-input {
-        @apply rounded-2xl border border-border bg-background px-4 py-4 text-base font-sans-medium text-primary;
+        @apply rounded-2xl border border-border bg-background px-4 py-3 text-base font-sans-medium text-primary;
     }
 
     .auth-input-error {
@@ -330,7 +330,7 @@
     }
 
     .auth-button-text {
-        @apply text-base font-sans-bold text-primary;
+        @apply text-base font-sans-bold text-white;
     }
 
     .auth-secondary-button {
@@ -370,7 +370,7 @@
     }
 
     .modal-overlay-centered {
-        @apply flex-1 items-center justify-center;
+        @apply flex-1 items-center justify-start pt-32;
     }
 
     .modal-backdrop {
@@ -378,11 +378,11 @@
     }
 
     .modal-container {
-        @apply mt-auto max-h-[85%] rounded-t-3xl bg-background;
+        @apply mt-auto max-h-[75%] rounded-t-3xl bg-background;
     }
 
     .modal-container-centered {
-        @apply w-[85%] max-h-[80%] rounded-3xl border border-black/10 bg-background overflow-hidden;
+        @apply w-[90%] max-w-[500px] max-h-[75%] rounded-3xl border border-black/10 bg-background overflow-hidden;
     }
 
     .modal-header {
@@ -402,7 +402,7 @@
     }
 
     .modal-body {
-        @apply gap-5 p-5;
+        @apply gap-4 p-5;
     }
 
     .picker-row {
@@ -834,9 +834,9 @@
     .sub-meta,
     .sub-metadata,
     .sub-billing,
-    .sub-label,
-    .sub-cancel-text { @apply text-white; }
-    .sub-cancel { @apply bg-accent; }
+    .sub-label { @apply text-white; }
+    .sub-cancel-text { @apply text-orange-500; }
+    .sub-cancel { @apply bg-transparent; }
 
     /* ── List heading ─── */
     .list-title { @apply text-[#f0ede4]; }
