@@ -886,6 +886,12 @@
     /* Logo chip stays cream (bg-muted) so brand logos read the same as light mode */
     .insights-history-name,
     .insights-history-price { @apply text-[#f0ede4]; }
+    /* Keep only the logo chips light so brand logos stay readable */
+    .upcoming-icon-wrap,
+    .sub-icon-wrap,
+    .insights-history-icon-wrap {
+        background-color: #f6eecf;
+    }
     .insights-history-date,
     .insights-history-billing { @apply text-[rgba(255,255,255,0.55)]; }
     /* Area-chart breakdown/legend/active markers stay light (see chart note above) */
