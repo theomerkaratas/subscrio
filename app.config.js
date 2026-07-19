@@ -10,8 +10,13 @@ export default {
     newArchEnabled: true,
     ios: {
       supportsTablet: true,
+      bundleIdentifier: "com.theomerkaratas.subscrio",
+      infoPlist: {
+        ITSAppUsesNonExemptEncryption: false,
+      },
     },
     android: {
+      package: "com.theomerkaratas.subscrio",
       adaptiveIcon: {
         backgroundColor: "#E6F4FE",
         foregroundImage: "./assets/images/android-icon-foreground.png",
@@ -44,12 +49,12 @@ export default {
         "expo-font",
         {
           fonts: [
-            "../assets/fonts/PlusJakartaSans-Bold.ttf",
-            "../assets/fonts/PlusJakartaSans-Light.ttf",
-            "../assets/fonts/PlusJakartaSans-Regular.ttf",
-            "../assets/fonts/PlusJakartaSans-ExtraBold.ttf",
-            "../assets/fonts/PlusJakartaSans-Medium.ttf",
-            "../assets/fonts/PlusJakartaSans-SemiBold.ttf",
+            "./assets/fonts/PlusJakartaSans-Bold.ttf",
+            "./assets/fonts/PlusJakartaSans-Light.ttf",
+            "./assets/fonts/PlusJakartaSans-Regular.ttf",
+            "./assets/fonts/PlusJakartaSans-ExtraBold.ttf",
+            "./assets/fonts/PlusJakartaSans-Medium.ttf",
+            "./assets/fonts/PlusJakartaSans-SemiBold.ttf",
           ],
         },
       ],
