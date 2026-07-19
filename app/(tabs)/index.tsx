@@ -1,5 +1,5 @@
 import "../../global.css"
-import { Text, View, Image, Pressable, FlatList } from "react-native";
+import { Text, View, Image, Pressable, FlatList, Alert, TextInput, TouchableOpacity } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/images";
@@ -22,14 +22,67 @@ const SafeAreaView = styled(RNSafeAreaView);
 export default function App() {
     const { user } = useUser();
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
-    const { subscriptions, addSubscription, balance, updateBalance, currency, isDemoMode } = useSubscriptions();
+    const { subscriptions, addSubscription, balance, updateBalance, currency, isDemoMode, cancelSubscription, updateSubscription } = useSubscriptions();
     const { isDark } = useTheme();
+    const [query, setQuery] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
     const [adjustModalVisible, setAdjustModalVisible] = useState(false);
+    const [editModalVisible, setEditModalVisible] = useState(false);
+    const [subscriptionToEdit, setSubscriptionToEdit] = useState<Subscription | null>(null);
+    const [cancellingIds, setCancellingIds] = useState<string[]>([]);
 
     const handleAddSubscription = (subscription: Subscription) => {
         addSubscription(subscription);
     };
+
+    const handleEdit = (subId: string) => {
+        const sub = subscriptions.find(s => s.id === subId);
+        if (sub) {
+            setSubscriptionToEdit(sub);
+            setEditModalVisible(true);
+        }
+    };
+
+    const handleUpdateSubscription = (updatedSub: Subscription) => {
+        updateSubscription(updatedSub.id, updatedSub);
+        setEditModalVisible(false);
+        setSubscriptionToEdit(null);
+    };
+
+    const handleCancel = (id: string, name?: string, isOneTime?: boolean) => {
+        if (!id) return;
+        Alert.alert(
+            "Cancel subscription",
+            `Are you sure you want to cancel ${name || 'this subscription'}?`,
+            [
+                { text: "No", style: "cancel" },
+                {
+                    text: "Yes, cancel",
+                    style: "destructive",
+                    onPress: async () => {
+                        setCancellingIds((cur) => [...cur, id]);
+                        try {
+                            await cancelSubscription(id);
+                        } finally {
+                            setCancellingIds((cur) => cur.filter((x) => x !== id));
+                        }
+                    },
+                },
+            ]
+        );
+    };
+
+    const filtered = React.useMemo(() => {
+        const q = query.trim().toLowerCase();
+        if (!q) return subscriptions;
+        return subscriptions.filter(
+            (sub) =>
+                sub.name.toLowerCase().includes(q) ||
+                sub.category?.toLowerCase().includes(q) ||
+                sub.plan?.toLowerCase().includes(q) ||
+                sub.status?.toLowerCase().includes(q)
+        );
+    }, [query, subscriptions]);
 
     const upcomingConverted = React.useMemo(() => {
         const now = dayjs();
@@ -132,15 +185,45 @@ export default function App() {
                         </View>
 
                         <ListHeading title="Subscriptions" />
+
+                        {/* Search Bar */}
+                        <View className="subs-search-wrap mb-4">
+                            <Text className="text-base">🔍</Text>
+                            <TextInput
+                                className="subs-search-input"
+                                placeholder="Search by name, category…"
+                                placeholderTextColor={isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.45)"}
+                                value={query}
+                                onChangeText={setQuery}
+                                returnKeyType="search"
+                                clearButtonMode="never"
+                                autoCorrect={false}
+                                autoCapitalize="none"
+                            />
+                            {query.length > 0 && (
+                                <TouchableOpacity
+                                    className="subs-search-clear"
+                                    onPress={() => setQuery("")}
+                                    hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Clear search"
+                                >
+                                    <Text className="subs-search-clear-text">✕</Text>
+                                </TouchableOpacity>
+                            )}
+                        </View>
                     </>
                 )}
-                data={subscriptions}
+                data={filtered}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (
                     <SubscriptionCard 
                         {...item} 
                         expanded={expandedSubscriptionId === item.id} 
                         onPress={() => setExpandedSubscriptionId((currentId) => currentId === item.id ? null : item.id)} 
+                        onCancelPress={() => handleCancel(item.id, item.name, item.billing === "One-time")}
+                        isCancelling={cancellingIds.includes(item.id)}
+                        onEdit={() => handleEdit(item.id)}
                     />
                 )}
                 extraData={expandedSubscriptionId}
@@ -160,6 +243,16 @@ export default function App() {
                 visible={adjustModalVisible}
                 onClose={() => setAdjustModalVisible(false)}
                 onSubmit={updateBalance}
+            />
+
+            <CreateSubscriptionModal
+                visible={editModalVisible}
+                onClose={() => {
+                    setEditModalVisible(false);
+                    setSubscriptionToEdit(null);
+                }}
+                onSubmit={handleUpdateSubscription}
+                subscription={subscriptionToEdit || undefined}
             />
         </SafeAreaView>
     );
