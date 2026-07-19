@@ -3,26 +3,27 @@ import { Text, View, TextInput, FlatList, TouchableOpacity } from 'react-native'
 import React, { useState, useMemo } from 'react'
 import { styled } from "nativewind";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
-import { HOME_SUBSCRIPTIONS } from "@/constants/data";
 import SubscriptionCard from "@/components/SubscriptionCard";
+import { useSubscriptions } from "@/context/SubscriptionContext";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
 const Subscriptions = () => {
+  const { subscriptions } = useSubscriptions();
   const [query, setQuery] = useState("");
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
-    if (!q) return HOME_SUBSCRIPTIONS;
-    return HOME_SUBSCRIPTIONS.filter(
+    if (!q) return subscriptions;
+    return subscriptions.filter(
       (sub) =>
         sub.name.toLowerCase().includes(q) ||
         sub.category?.toLowerCase().includes(q) ||
         sub.plan?.toLowerCase().includes(q) ||
         sub.status?.toLowerCase().includes(q)
     );
-  }, [query]);
+  }, [query, subscriptions]);
 
   return (
     <SafeAreaView className="flex-1 bg-background p-5">
@@ -31,7 +32,7 @@ const Subscriptions = () => {
         <Text className="subs-screen-title">Subscriptions</Text>
         <View className="subs-screen-count">
           <Text className="subs-screen-count-text">
-            {filtered.length} of {HOME_SUBSCRIPTIONS.length}
+            {filtered.length} of {subscriptions.length}
           </Text>
         </View>
       </View>
@@ -55,6 +56,8 @@ const Subscriptions = () => {
             className="subs-search-clear"
             onPress={() => setQuery("")}
             hitSlop={{ top: 8, bottom: 8, left: 8, right: 8 }}
+            accessibilityRole="button"
+            accessibilityLabel="Clear search"
           >
             <Text className="subs-search-clear-text">✕</Text>
           </TouchableOpacity>

@@ -76,8 +76,10 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
   const validate = (): boolean => {
     const next: typeof errors = {};
     if (!form.name.trim()) next.name = "Name is required.";
-    const parsed = parseFloat(form.price);
-    if (!form.price.trim() || isNaN(parsed) || parsed <= 0)
+    const trimmedPrice = form.price.trim();
+    const isNumeric = /^[0-9]+(\.[0-9]+)?$/.test(trimmedPrice);
+    const parsed = Number(trimmedPrice);
+    if (!trimmedPrice || !isNumeric || isNaN(parsed) || !Number.isFinite(parsed) || parsed <= 0)
       next.price = "Enter a valid positive price.";
     setErrors(next);
     return Object.keys(next).length === 0;
@@ -88,10 +90,11 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
   const handleSubmit = () => {
     if (!validate()) return;
     const now = dayjs().toISOString();
+    const parsedPrice = Number(form.price.trim());
     const subscription: Subscription = {
       id: generateId(form.name),
       name: form.name.trim(),
-      price: parseFloat(parseFloat(form.price).toFixed(2)),
+      price: parseFloat(parsedPrice.toFixed(2)),
       currency: "USD",
       billing: form.frequency,
       category: form.category || "Other",
@@ -127,7 +130,7 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
       onRequestClose={handleClose}
     >
       {/* Dimmed overlay */}
-      <Pressable className="modal-overlay" onPress={handleClose} />
+      <Pressable className="modal-overlay" onPress={handleClose} accessible={false} />
 
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -136,7 +139,12 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
         {/* Header */}
         <View className="modal-header">
           <Text className="modal-title">New Subscription</Text>
-          <TouchableOpacity className="modal-close" onPress={handleClose}>
+          <TouchableOpacity 
+            className="modal-close" 
+            onPress={handleClose}
+            accessibilityRole="button"
+            accessibilityLabel="Close dialog"
+          >
             <Text className="modal-close-text">✕</Text>
           </TouchableOpacity>
         </View>

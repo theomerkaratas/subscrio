@@ -3,7 +3,7 @@ import { Text, View, Image, Pressable, FlatList } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/images";
-import { HOME_USER, HOME_BALANCE, UPCOMING_SUBSCRIPTIONS, HOME_SUBSCRIPTIONS } from "@/constants/data";
+import { HOME_USER, HOME_BALANCE, UPCOMING_SUBSCRIPTIONS } from "@/constants/data";
 import { icons } from "@/constants/icons";
 import { formatCurrency } from "@/lib/utils";
 import dayjs from "dayjs";
@@ -13,17 +13,18 @@ import SubscriptionCard from "@/components/SubscriptionCard";
 import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
 import { useState } from "react";
 import { useUser } from "@clerk/expo";
+import { useSubscriptions } from "@/context/SubscriptionContext";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
 export default function App() {
     const { user } = useUser();
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
-    const [subscriptions, setSubscriptions] = useState<Subscription[]>(HOME_SUBSCRIPTIONS);
+    const { subscriptions, addSubscription } = useSubscriptions();
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleAddSubscription = (subscription: Subscription) => {
-        setSubscriptions((prev) => [subscription, ...prev]);
+        addSubscription(subscription);
     };
 
     return (
@@ -46,6 +47,8 @@ export default function App() {
                             <Pressable
                                 className="w-12 h-12 rounded-full bg-background p-2 justify-center items-center border border-muted"
                                 onPress={() => setModalVisible(true)}
+                                accessibilityRole="button"
+                                accessibilityLabel="Add subscription"
                             >
                                 <Image source={icons.add} className="w-6 h-6" />
                             </Pressable>
