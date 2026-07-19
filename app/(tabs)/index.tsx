@@ -93,7 +93,7 @@ export default function App() {
                             <FlatList
                                 data={upcomingConverted}
                                 keyExtractor={(item) => item.id}
-                                renderItem={({ item }) => <UpcomingSubscriptionCard {...item} currency={currency} />}
+                                renderItem={({ item }) => <UpcomingSubscriptionCard {...item} />}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
                                 ListEmptyComponent={<Text className="home-empty-state">No upcoming renewals yet.</Text>}

@@ -19,14 +19,12 @@ const Subscriptions = () => {
   const handleCancel = (id: string, name?: string, isOneTime?: boolean) => {
     if (!id) return;
     Alert.alert(
-      isOneTime ? "Remove payment" : "Cancel subscription",
-      isOneTime 
-        ? `Are you sure you want to remove ${name || 'this payment'}?`
-        : `Are you sure you want to cancel ${name || 'this subscription'}?`,
+      "Cancel subscription",
+      `Are you sure you want to cancel ${name || 'this subscription'}?`,
       [
         { text: "No", style: "cancel" },
         {
-          text: isOneTime ? "Yes, remove" : "Yes, cancel",
+          text: "Yes, cancel",
           style: "destructive",
           onPress: async () => {
             setCancellingIds((cur) => [...cur, id]);

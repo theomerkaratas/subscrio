@@ -155,9 +155,6 @@ const Settings = () => {
                   {item.rate.toFixed(2)} {item.to}
                 </Text>
               </View>
-              <View className="px-2 py-0.5 rounded-md bg-muted dark:bg-[rgba(255,255,255,0.05)]">
-                <Text className="text-[10px] font-sans-bold text-muted-foreground uppercase">Live</Text>
-              </View>
             </View>
           ))}
         </View>
