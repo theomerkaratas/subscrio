@@ -369,8 +369,20 @@
         @apply flex-1 bg-black/50;
     }
 
+    .modal-overlay-centered {
+        @apply flex-1 items-center justify-center;
+    }
+
+    .modal-backdrop {
+        @apply absolute inset-0 bg-black/50;
+    }
+
     .modal-container {
         @apply mt-auto max-h-[85%] rounded-t-3xl bg-background;
+    }
+
+    .modal-container-centered {
+        @apply w-[85%] max-h-[80%] rounded-3xl border border-black/10 bg-background overflow-hidden;
     }
 
     .modal-header {
@@ -824,7 +836,7 @@
     .sub-billing,
     .sub-label,
     .sub-cancel-text { @apply text-white; }
-    .sub-cancel { @apply bg-[#f0ede4]; }
+    .sub-cancel { @apply bg-accent; }
 
     /* ── List heading ─── */
     .list-title { @apply text-[#f0ede4]; }
@@ -837,7 +849,7 @@
     .auth-title,
     .auth-wordmark { @apply text-[#f0ede4]; }
     .auth-input { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27] text-[#f0ede4]; }
-    .auth-button-text { @apply text-[#0f1117]; }
+    .auth-button-text { @apply text-white; }
     .auth-helper,
     .auth-subtitle,
     .auth-wordmark-sub,
@@ -850,6 +862,8 @@
     .modal-title { @apply text-[#f0ede4]; }
     .modal-close { @apply bg-[#252836]; }
     .modal-close-text { @apply text-[#f0ede4]; }
+
+    .modal-container-centered { @apply border border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }
 
     /* ── Picker & category chips ─── */
     .picker-option { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }

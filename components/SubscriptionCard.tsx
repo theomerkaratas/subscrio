@@ -15,7 +15,11 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
         <View className="sub-head">
             <View className="sub-main">
                 <View className="sub-icon-wrap">
-                    <Image source={icon || require('@/assets/icons/logo.png')} className="sub-icon" />
+                    <Image 
+                        source={typeof icon === 'string' ? { uri: icon } : (icon || require('@/assets/icons/logo.png'))} 
+                        className="sub-icon" 
+                        style={typeof icon === 'string' ? { width: 32, height: 32, borderRadius: 8 } : undefined}
+                    />
                 </View>
                 <View className="sub-copy">
                     <Text numberOfLines={1} className="sub-title">{name || 'Unknown'}</Text>
@@ -26,7 +30,7 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
             </View>
             <View className="sub-price-box">
                 <Text className="sub-price">{formatCurrency(price || 0, currency || 'USD')}</Text>
-                <Text className="sub-billing">{billing || 'N/A'}</Text>
+                <Text className="sub-billing">{billing === 'One-time' ? 'One-time' : billing || 'N/A'}</Text>
             </View>
         </View>
         {expanded && (
@@ -38,8 +42,14 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
                                 <Text className="sub-value" numberOfLines={1} ellipsizeMode="tail">{paymentMethod?.trim() || 'Not provided'}</Text>
                             </View>
                             <TouchableOpacity className="list-action" onPress={onChangePayment} accessibilityRole="button">
-                                <Text className="list-action-text">Manage</Text>
+                                <Text className="list-action-text">Edit</Text>
                             </TouchableOpacity>
+                        </View>
+                        <View className="sub-row">
+                            <View className="sub-row-copy">
+                                <Text className="sub-label">Type:</Text>
+                                <Text className="sub-value" numberOfLines={1} ellipsizeMode="tail">{billing || 'Not specified'}</Text>
+                            </View>
                         </View>
                         <View className="sub-row">
                             <View className="sub-row-copy">
@@ -47,7 +57,7 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
                                 <Text className="sub-value" numberOfLines={1} ellipsizeMode="tail">{category?.trim() || plan?.trim() || 'Not specified'}</Text>
                             </View>
                             <TouchableOpacity className="list-action" onPress={onChangeCategory} accessibilityRole="button">
-                                <Text className="list-action-text">Change</Text>
+                                <Text className="list-action-text">Edit</Text>
                             </TouchableOpacity>
                         </View>
                         <View className="sub-row">
