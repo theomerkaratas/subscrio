@@ -20,8 +20,6 @@ import { useTheme } from "@/context/ThemeContext";
 const StyledSafeAreaView = styled(SafeAreaView);
 const StyledScrollView = styled(ScrollView);
 
-type NavigateArgs = { session: { currentTask?: unknown }; decorateUrl: (path: string) => string };
-
 export default function SignIn() {
   const router = useRouter();
   const { signIn, errors, fetchStatus } = useSignIn();
@@ -31,11 +29,6 @@ export default function SignIn() {
   const [password, setPassword] = useState("");
   const placeholderColor = isDark ? "rgba(255, 255, 255, 0.4)" : "rgba(0, 0, 0, 0.35)";
 
-  const navigateAfterAuth = ({ session, decorateUrl }: NavigateArgs) => {
-    if (session?.currentTask) return;
-    router.replace(decorateUrl("/") as Href);
-  };
-
   const handleSignIn = async () => {
     if (!signIn) return;
 
@@ -43,7 +36,7 @@ export default function SignIn() {
     if (error) return;
 
     if (signIn.status === "complete") {
-      await signIn.finalize({ navigate: navigateAfterAuth });
+      await signIn.finalize();
     }
   };
 

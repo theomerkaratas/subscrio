@@ -113,7 +113,6 @@ export default function SignUp() {
 
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
-        router.replace("/");
       } else {
         console.warn("Sign-up status is not complete:", completeSignUp.status);
         console.warn("Unverified fields:", completeSignUp.unverifiedFields);
