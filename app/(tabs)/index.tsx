@@ -122,7 +122,7 @@ export default function App() {
         <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117] p-5">
 
             <FlatList
-                ListHeaderComponent={() => (
+                ListHeaderComponent={
                     <>
                         <View className="home-header mb-2">
                             <View className="home-user">
@@ -214,7 +214,7 @@ export default function App() {
                             )}
                         </View>
                     </>
-                )}
+                }
                 data={filtered}
                 keyExtractor={(item) => item.id}
                 renderItem={({ item }) => (

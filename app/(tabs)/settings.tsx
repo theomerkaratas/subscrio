@@ -24,7 +24,7 @@ const Settings = () => {
   const router = useRouter()
   const { isDark, toggleTheme } = useTheme()
   const { currency, updateCurrency, isDemoMode, setDemoMode } = useSubscriptions()
-  const { subscription, isPremium } = useClerkMetadata()
+  const { subscription } = useClerkMetadata()
 
   const [firstName, setFirstName] = useState(user?.firstName || "")
   const [lastName, setLastName] = useState(user?.lastName || "")
@@ -175,20 +175,6 @@ const Settings = () => {
             </Text>
           </View>
 
-          <View className="flex-row justify-between items-center">
-            <Text className="text-sm font-sans-semibold text-muted-foreground dark:text-[rgba(255,255,255,0.55)]">Plan Tier</Text>
-            <View className={clsx(
-              "px-2.5 py-0.5 rounded-full",
-              isPremium ? "bg-accent/15" : "bg-muted dark:bg-[#252836]"
-            )}>
-              <Text className={clsx(
-                "text-xs font-sans-bold capitalize",
-                isPremium ? "text-accent" : "text-muted-foreground dark:text-[rgba(255,255,255,0.55)]"
-              )}>
-                {subscription.tier}
-              </Text>
-            </View>
-          </View>
 
           <View className="flex-row justify-between items-center">
             <Text className="text-sm font-sans-semibold text-muted-foreground dark:text-[rgba(255,255,255,0.55)]">Status</Text>

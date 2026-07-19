@@ -1,7 +1,6 @@
 import { useUser } from "@clerk/expo";
 
 export interface ClerkSubscription {
-  tier: string;
   status: string;
   endsAt?: string;
 }
@@ -24,7 +23,6 @@ export interface ClerkPublicMetadata {
 
 const DEFAULT_METADATA: Required<ClerkPublicMetadata> = {
   subscription: {
-    tier: "free",
     status: "active",
   },
   usage: {
@@ -49,7 +47,6 @@ export function useClerkMetadata() {
     ...metadata.usage,
   };
 
-  const isPremium = subscription.tier === "premium" && subscription.status === "active";
   const limit = usage.limit;
   const spent = usage.currentMonthSpent;
   const isOverLimit = spent >= limit;
@@ -59,7 +56,6 @@ export function useClerkMetadata() {
     isLoaded,
     subscription,
     usage,
-    isPremium,
     isOverLimit,
     spentPercentage,
     rawMetadata: metadata,
