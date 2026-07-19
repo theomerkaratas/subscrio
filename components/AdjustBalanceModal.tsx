@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { clsx } from "clsx";
 import { useSubscriptions } from "@/context/SubscriptionContext";
+import { usePostHog } from "posthog-react-native";
 
 interface Props {
   visible: boolean;
@@ -20,6 +21,7 @@ interface Props {
 
 const AdjustBalanceModal = ({ visible, onClose, onSubmit }: Props) => {
   const { currency } = useSubscriptions();
+  const posthog = usePostHog();
   const [amount, setAmount] = useState("");
   const [type, setType] = useState<"increase" | "decrease">("increase");
   const [error, setError] = useState<string | null>(null);
@@ -41,6 +43,11 @@ const AdjustBalanceModal = ({ visible, onClose, onSubmit }: Props) => {
     const parsedAmount = Number(amount.trim().replace(",", "."));
     const finalAmount = type === "increase" ? parsedAmount : -parsedAmount;
     onSubmit(parseFloat(finalAmount.toFixed(2)));
+    posthog.capture('balance_adjusted', {
+      adjustment_type: type,
+      amount: parsedAmount,
+      currency,
+    });
     setAmount("");
     onClose();
   };

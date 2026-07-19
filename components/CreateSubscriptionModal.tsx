@@ -15,6 +15,7 @@ import dayjs from "dayjs";
 import { icons } from "@/constants/icons";
 import { useSubscriptions } from "@/context/SubscriptionContext";
 import { useTheme } from "@/context/ThemeContext";
+import { usePostHog } from "posthog-react-native";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
@@ -76,6 +77,7 @@ const EMPTY_FORM = {
 const CreateSubscriptionModal = ({ visible, onClose, onSubmit, subscription }: Props) => {
   const { currency } = useSubscriptions();
   const { isDark } = useTheme();
+  const posthog = usePostHog();
   const [form, setForm] = useState(EMPTY_FORM);
 
   const placeholderColor = isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)";
@@ -142,6 +144,26 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit, subscription }: P
       color: CATEGORY_COLORS[form.category] ?? CATEGORY_COLORS["Other"],
     };
     onSubmit(subData);
+
+    if (subscription) {
+      posthog.capture('subscription_updated', {
+        subscription_name: subData.name,
+        subscription_category: subData.category ?? null,
+        billing_frequency: subData.billing,
+        price: subData.price,
+        currency: subData.currency ?? null,
+        status: subData.status ?? null,
+      });
+    } else {
+      posthog.capture('subscription_created', {
+        subscription_name: subData.name,
+        subscription_category: subData.category ?? null,
+        billing_frequency: subData.billing,
+        price: subData.price,
+        currency: subData.currency ?? null,
+      });
+    }
+
     onClose();
   };
 

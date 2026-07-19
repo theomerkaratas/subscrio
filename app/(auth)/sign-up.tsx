@@ -15,6 +15,7 @@ import { Link, useRouter } from "expo-router";
 import { useSignUp } from "@clerk/expo/legacy";
 import { styled } from "nativewind";
 import { useTheme } from "@/context/ThemeContext";
+import { usePostHog } from "posthog-react-native";
 
 const StyledSafeAreaView = styled(SafeAreaView);
 const StyledScrollView = styled(ScrollView);
@@ -23,6 +24,7 @@ export default function SignUp() {
   const router = useRouter();
   const { isLoaded, signUp, setActive } = useSignUp();
   const { isDark } = useTheme();
+  const posthog = usePostHog();
 
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -113,6 +115,11 @@ export default function SignUp() {
 
       if (completeSignUp.status === "complete") {
         await setActive({ session: completeSignUp.createdSessionId });
+        posthog.capture('user_signed_up', {
+          method: 'email',
+          username: username,
+          $set_once: { signup_date: new Date().toISOString() },
+        });
       } else {
         console.warn("Sign-up status is not complete:", completeSignUp.status);
         console.warn("Unverified fields:", completeSignUp.unverifiedFields);

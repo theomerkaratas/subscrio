@@ -16,6 +16,7 @@ import { useSignIn } from "@clerk/expo";
 import { styled } from "nativewind";
 import type { Href } from "expo-router";
 import { useTheme } from "@/context/ThemeContext";
+import { usePostHog } from "posthog-react-native";
 
 const StyledSafeAreaView = styled(SafeAreaView);
 const StyledScrollView = styled(ScrollView);
@@ -24,6 +25,7 @@ export default function SignIn() {
   const router = useRouter();
   const { signIn, errors, fetchStatus } = useSignIn();
   const { isDark } = useTheme();
+  const posthog = usePostHog();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -37,6 +39,9 @@ export default function SignIn() {
 
     if (signIn.status === "complete") {
       await signIn.finalize();
+      posthog.capture('user_signed_in', {
+        method: 'email',
+      });
     }
   };
 
