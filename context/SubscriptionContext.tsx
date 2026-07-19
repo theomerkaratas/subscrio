@@ -4,6 +4,8 @@ import { HOME_SUBSCRIPTIONS } from "@/constants/data";
 interface SubscriptionContextType {
   subscriptions: Subscription[];
   addSubscription: (subscription: Subscription) => void;
+  cancelSubscription: (id: string) => Promise<void>;
+  updateSubscription: (id: string, patch: Partial<Subscription>) => void;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
@@ -15,8 +17,19 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     setSubscriptions((prev) => [subscription, ...prev]);
   };
 
+  const cancelSubscription = async (id: string) => {
+    // In a real app this would call an API. Here we just mark the
+    // subscription as cancelled so the UI can reflect the change.
+    setSubscriptions((prev) => prev.map((s) => (s.id === id ? { ...s, status: 'cancelled' } : s)));
+    return Promise.resolve();
+  };
+
+  const updateSubscription = (id: string, patch: Partial<Subscription>) => {
+    setSubscriptions((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
+  };
+
   return (
-    <SubscriptionContext.Provider value={{ subscriptions, addSubscription }}>
+    <SubscriptionContext.Provider value={{ subscriptions, addSubscription, cancelSubscription, updateSubscription }}>
       {children}
     </SubscriptionContext.Provider>
   );
