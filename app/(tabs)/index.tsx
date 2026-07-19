@@ -87,7 +87,8 @@ export default function App() {
     const upcomingConverted = React.useMemo(() => {
         const now = dayjs();
         const monthKey = now.format('YYYY-MM');
-        if (isDemoMode) {
+        const isAdmin = user?.username === "admin";
+        if (isDemoMode && isAdmin) {
             return subscriptions
                 .filter(sub => sub.status === 'active' && (sub.renewalDate || (sub.billing === 'One-time' && sub.startDate)))
                 .map(sub => {
@@ -115,7 +116,7 @@ export default function App() {
             price: convertAmount(sub.price, "USD", currency), // Assuming base for static data is USD
             currency: currency
         }));
-    }, [subscriptions, isDemoMode, currency]);
+    }, [subscriptions, isDemoMode, currency, user]);
 
     return (
         <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117] p-5">
@@ -130,7 +131,7 @@ export default function App() {
                                     className="home-avatar" 
                                 />
                                 <Text className="home-user-name" numberOfLines={1} ellipsizeMode="tail">
-                                    {user?.fullName || user?.primaryEmailAddress?.emailAddress || HOME_USER.name}
+                                    {user?.username || HOME_USER.name}
                                 </Text>
                             </View>
 
@@ -162,7 +163,7 @@ export default function App() {
                                     {formatCurrency(balance, currency)}
                                 </Text>
                                 <Text className="home-balance-date">
-                                    {dayjs(isDemoMode ? DUMMY_SUBSCRIPTIONS[0].renewalDate : HOME_BALANCE.nextRenewalDate).format("MM/DD")}
+                                    {dayjs((isDemoMode && user?.username === "admin") ? DUMMY_SUBSCRIPTIONS[0].renewalDate : HOME_BALANCE.nextRenewalDate).format("MM/DD")}
                                 </Text>
                             </View>
                         </View>

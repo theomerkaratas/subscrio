@@ -1,6 +1,6 @@
 import "../../global.css"
-import { Text, View, TouchableOpacity, Alert, Image, Switch, ScrollView } from 'react-native'
-import React from 'react'
+import { Text, View, TouchableOpacity, Alert, Image, Switch, ScrollView, TextInput } from 'react-native'
+import React, { useState, useEffect } from 'react'
 import { styled } from "nativewind"
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context"
 import { useAuth, useUser } from "@clerk/expo"
@@ -10,12 +10,13 @@ import dayjs from "dayjs"
 import { useTheme } from "@/context/ThemeContext"
 import { useSubscriptions } from "@/context/SubscriptionContext"
 import clsx from "clsx"
+import { useClerkMetadata } from "@/hooks/useClerkMetadata"
+import { EXCHANGE_RATES } from "@/lib/utils"
+import * as ImagePicker from 'expo-image-picker'
 
 const SafeAreaView = styled(RNSafeAreaView)
 
 const CURRENCIES = ["USD", "EUR", "TRY", "JPY"]
-
-import { EXCHANGE_RATES } from "@/lib/utils"
 
 const Settings = () => {
   const { signOut } = useAuth()
@@ -23,6 +24,74 @@ const Settings = () => {
   const router = useRouter()
   const { isDark, toggleTheme } = useTheme()
   const { currency, updateCurrency, isDemoMode, setDemoMode } = useSubscriptions()
+  const { subscription, isPremium } = useClerkMetadata()
+
+  const [firstName, setFirstName] = useState(user?.firstName || "")
+  const [lastName, setLastName] = useState(user?.lastName || "")
+  const [isSaving, setIsSaving] = useState(false)
+  const [isUploading, setIsUploading] = useState(false)
+
+  useEffect(() => {
+    if (user) {
+      setFirstName(user.firstName || "")
+      setLastName(user.lastName || "")
+    }
+  }, [user])
+
+  const onPickImage = async () => {
+    if (!user) return;
+    try {
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: 'images',
+        allowsEditing: true,
+        aspect: [1, 1],
+        quality: 0.2,
+        base64: true,
+      });
+
+      if (!result.canceled && result.assets?.[0]?.base64) {
+        setIsUploading(true);
+        const base64 = result.assets[0].base64;
+        const mimeType = result.assets[0].mimeType || 'image/jpeg';
+        const file = `data:${mimeType};base64,${base64}`;
+
+        await user.setProfileImage({
+          file,
+        });
+        await user.reload();
+        Alert.alert("Success", "Profile picture updated successfully!");
+      }
+    } catch (err: any) {
+      console.error("Error updating profile image:", err);
+      const errMsg = err?.errors?.[0]?.message || err?.message || "Could not upload image.";
+      Alert.alert("Error", errMsg);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+
+  const handleUpdateProfile = async () => {
+    if (!user) return;
+    if (!firstName.trim()) {
+      Alert.alert("Validation Error", "First Name cannot be empty.");
+      return;
+    }
+    setIsSaving(true);
+    try {
+      await user.update({
+        firstName: firstName.trim(),
+        lastName: lastName.trim(),
+      });
+      await user.reload();
+      Alert.alert("Success", "Profile information updated successfully!");
+    } catch (err: any) {
+      console.error("Error updating profile name:", err);
+      const errMsg = err?.errors?.[0]?.message || err?.message || "Could not update profile information.";
+      Alert.alert("Error", errMsg);
+    } finally {
+      setIsSaving(false);
+    }
+  };
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -60,16 +129,23 @@ const Settings = () => {
 
         {/* Profile Row */}
         <View className="flex-row items-center gap-4 mb-4">
-          <Image
-            source={user?.imageUrl ? { uri: user.imageUrl } : images.avatar}
-            className="w-14 h-14 rounded-full"
-          />
+          <TouchableOpacity onPress={onPickImage} disabled={isUploading} className="relative">
+            <Image
+              source={user?.imageUrl ? { uri: user.imageUrl } : images.avatar}
+              className="w-14 h-14 rounded-full"
+            />
+            <View className="absolute inset-0 bg-black/40 rounded-full justify-center items-center">
+              <Text className="text-[9px] text-white font-sans-bold text-center">
+                {isUploading ? "..." : "Edit"}
+              </Text>
+            </View>
+          </TouchableOpacity>
           <View className="flex-1 gap-1">
             <Text className="text-lg font-sans-bold text-primary dark:text-[#f0ede4]" numberOfLines={1} ellipsizeMode="tail">
               {user?.fullName || user?.firstName || "Anonymous"}
             </Text>
             <Text className="text-sm font-sans-medium text-muted-foreground dark:text-[rgba(255,255,255,0.55)]" numberOfLines={1} ellipsizeMode="tail">
-              {user?.primaryEmailAddress?.emailAddress || "—"}
+              {user?.username || user?.primaryEmailAddress?.emailAddress || "—"}
             </Text>
           </View>
         </View>
@@ -98,6 +174,69 @@ const Settings = () => {
               {user?.createdAt ? dayjs(user.createdAt).format("MMMM D, YYYY") : "—"}
             </Text>
           </View>
+
+          <View className="flex-row justify-between items-center">
+            <Text className="text-sm font-sans-semibold text-muted-foreground dark:text-[rgba(255,255,255,0.55)]">Plan Tier</Text>
+            <View className={clsx(
+              "px-2.5 py-0.5 rounded-full",
+              isPremium ? "bg-accent/15" : "bg-muted dark:bg-[#252836]"
+            )}>
+              <Text className={clsx(
+                "text-xs font-sans-bold capitalize",
+                isPremium ? "text-accent" : "text-muted-foreground dark:text-[rgba(255,255,255,0.55)]"
+              )}>
+                {subscription.tier}
+              </Text>
+            </View>
+          </View>
+
+          <View className="flex-row justify-between items-center">
+            <Text className="text-sm font-sans-semibold text-muted-foreground dark:text-[rgba(255,255,255,0.55)]">Status</Text>
+            <Text className="text-sm font-sans-bold capitalize text-primary dark:text-[#f0ede4]">
+              {subscription.status}
+              {subscription.endsAt ? ` (until ${dayjs(subscription.endsAt).format("MM/DD/YY")})` : ""}
+            </Text>
+          </View>
+        </View>
+
+        {/* Divider */}
+        <View className="h-[1px] bg-border dark:bg-[rgba(255,255,255,0.1)] my-4" />
+
+        {/* Edit Profile Info Form */}
+        <View className="gap-3 mb-2">
+          <Text className="text-xs font-sans-semibold uppercase tracking-[0.5px] text-muted-foreground dark:text-[rgba(255,255,255,0.55)]">
+            Update Name
+          </Text>
+          <View className="flex-row gap-3">
+            <View className="flex-1">
+              <TextInput
+                className="bg-transparent border border-border dark:border-[rgba(255,255,255,0.1)] rounded-xl px-3 py-2.5 text-sm text-primary dark:text-[#f0ede4]"
+                placeholder="First Name"
+                placeholderTextColor={isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)"}
+                value={firstName}
+                onChangeText={setFirstName}
+              />
+            </View>
+            <View className="flex-1">
+              <TextInput
+                className="bg-transparent border border-border dark:border-[rgba(255,255,255,0.1)] rounded-xl px-3 py-2.5 text-sm text-primary dark:text-[#f0ede4]"
+                placeholder="Last Name"
+                placeholderTextColor={isDark ? "rgba(255,255,255,0.4)" : "rgba(0,0,0,0.35)"}
+                value={lastName}
+                onChangeText={setLastName}
+              />
+            </View>
+          </View>
+          <TouchableOpacity
+            onPress={handleUpdateProfile}
+            disabled={isSaving}
+            activeOpacity={0.8}
+            className="items-center rounded-xl bg-accent py-2.5"
+          >
+            <Text className="text-sm font-sans-bold text-primary dark:text-[#0f1117]">
+              {isSaving ? "Saving..." : "Save Changes"}
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
 
@@ -188,31 +327,33 @@ const Settings = () => {
       </View>
 
       {/* Demo Mode section */}
-      <View className="rounded-3xl border border-border dark:border-[rgba(255,255,255,0.1)] bg-card dark:bg-[#1a1d27] p-5 mb-4">
-        <Text className="text-xs font-sans-semibold uppercase tracking-[1px] text-muted-foreground dark:text-[rgba(255,255,255,0.55)] mb-4">
-          Development
-        </Text>
+      {user?.username === "admin" && (
+        <View className="rounded-3xl border border-border dark:border-[rgba(255,255,255,0.1)] bg-card dark:bg-[#1a1d27] p-5 mb-4">
+          <Text className="text-xs font-sans-semibold uppercase tracking-[1px] text-muted-foreground dark:text-[rgba(255,255,255,0.55)] mb-4">
+            Development
+          </Text>
 
-        <View className="flex-row items-center justify-between">
-          <View className="gap-1 flex-1 pr-4">
-            <Text className="text-base font-sans-semibold text-primary dark:text-[#f0ede4]">
-              Demo Mode
-            </Text>
-            <Text className="text-sm font-sans-medium text-muted-foreground dark:text-[rgba(255,255,255,0.55)]">
-              Populate the app with realistic dummy data for testing.
-            </Text>
+          <View className="flex-row items-center justify-between">
+            <View className="gap-1 flex-1 pr-4">
+              <Text className="text-base font-sans-semibold text-primary dark:text-[#f0ede4]">
+                Demo Mode
+              </Text>
+              <Text className="text-sm font-sans-medium text-muted-foreground dark:text-[rgba(255,255,255,0.55)]">
+                Populate the app with realistic dummy data for testing.
+              </Text>
+            </View>
+            <Switch
+              value={isDemoMode}
+              onValueChange={setDemoMode}
+              trackColor={{ false: "rgba(0,0,0,0.15)", true: "#ea7a53" }}
+              thumbColor="#ffffff"
+              ios_backgroundColor="rgba(0,0,0,0.15)"
+              accessibilityLabel="Toggle demo mode"
+              accessibilityRole="switch"
+            />
           </View>
-          <Switch
-            value={isDemoMode}
-            onValueChange={setDemoMode}
-            trackColor={{ false: "rgba(0,0,0,0.15)", true: "#ea7a53" }}
-            thumbColor="#ffffff"
-            ios_backgroundColor="rgba(0,0,0,0.15)"
-            accessibilityLabel="Toggle demo mode"
-            accessibilityRole="switch"
-          />
         </View>
-      </View>
+      )}
 
       {/* Sign out button */}
       <TouchableOpacity
