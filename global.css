@@ -90,7 +90,7 @@
     }
 
     .home-balance-card {
-        @apply my-2.5 min-h-40 justify-between gap-5 rounded-bl-4xl rounded-tr-4xl bg-accent p-6;
+        @apply my-2.5 min-h-40 justify-between gap-5 rounded-3xl bg-accent p-6;
     }
 
     .home-balance-label {
@@ -818,12 +818,13 @@
     /* Logo chip stays cream (bg-muted) so brand logos read the same as light mode */
     .sub-title,
     .sub-price,
-    .sub-value { @apply text-[#f0ede4]; }
+    .sub-value,
     .sub-meta,
+    .sub-metadata,
     .sub-billing,
-    .sub-label { @apply text-[rgba(255,255,255,0.55)]; }
+    .sub-label,
+    .sub-cancel-text { @apply text-white; }
     .sub-cancel { @apply bg-[#f0ede4]; }
-    .sub-cancel-text { @apply text-[#0f1117]; }
 
     /* ── List heading ─── */
     .list-title { @apply text-[#f0ede4]; }
@@ -865,6 +866,9 @@
     .subs-empty-title { @apply text-[#f0ede4]; }
     .subs-empty-subtitle { @apply text-[rgba(255,255,255,0.55)]; }
 
+    /* ── Home balance card */
+    .home-balance-card { @apply border border-white/20 bg-[#1a1d27]; }
+
     /* ── Insights screen ─── */
     .insights-header-btn { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }
     .insights-header-title { @apply text-[#f0ede4]; }
@@ -898,4 +902,7 @@
 
     /* ── Home empty state ─── */
     .home-empty-state { @apply text-[rgba(255,255,255,0.55)]; }
+
+    /* Ensure expanded subscription cards stay dark in dark mode */
+    .sub-card-expanded { @apply bg-card; }
 }

@@ -1,5 +1,5 @@
 import "../../global.css"
-import { Text, View, TextInput, FlatList, TouchableOpacity } from 'react-native'
+import { Text, View, TextInput, FlatList, TouchableOpacity, Alert } from 'react-native'
 import React, { useState, useMemo } from 'react'
 import { styled } from "nativewind";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
@@ -10,10 +10,72 @@ import { useTheme } from "@/context/ThemeContext";
 const SafeAreaView = styled(RNSafeAreaView);
 
 const Subscriptions = () => {
-  const { subscriptions } = useSubscriptions();
+  const { subscriptions, cancelSubscription, updateSubscription } = useSubscriptions();
   const { isDark } = useTheme();
   const [query, setQuery] = useState("");
+  const [cancellingIds, setCancellingIds] = useState<string[]>([]);
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
+
+  const handleCancel = (id: string, name?: string) => {
+    if (!id) return;
+    Alert.alert(
+      "Cancel subscription",
+      `Are you sure you want to cancel ${name || 'this subscription'}?`,
+      [
+        { text: "No", style: "cancel" },
+        {
+          text: "Yes, cancel",
+          style: "destructive",
+          onPress: async () => {
+            setCancellingIds((cur) => [...cur, id]);
+            try {
+              await cancelSubscription(id);
+            } finally {
+              setCancellingIds((cur) => cur.filter((x) => x !== id));
+            }
+          },
+        },
+      ]
+    );
+  };
+
+  const handleChangePayment = (id: string) => {
+    Alert.alert(
+      "Change payment method",
+      "Select a payment method:",
+      [
+        { text: "Card ****8530", onPress: () => updateSubscription(id, { paymentMethod: 'Card ****8530' }) },
+        { text: "PayPal", onPress: () => updateSubscription(id, { paymentMethod: 'PayPal' }) },
+        { text: "Cancel", style: "cancel" },
+      ]
+    );
+  };
+
+  const handleChangeCategory = (id: string) => {
+    Alert.alert(
+      "Change category",
+      "Choose a category:",
+      [
+        { text: "Productivity", onPress: () => updateSubscription(id, { category: 'Productivity' }) },
+        { text: "Utilities", onPress: () => updateSubscription(id, { category: 'Utilities' }) },
+        { text: "Other", onPress: () => updateSubscription(id, { category: 'Other' }) },
+        { text: "Cancel", style: "cancel" },
+      ]
+    );
+  };
+
+  const handleChangeStatus = (id: string) => {
+    Alert.alert(
+      "Change status",
+      "Set subscription status:",
+      [
+        { text: "Active", onPress: () => updateSubscription(id, { status: 'active' }) },
+        { text: "Paused", onPress: () => updateSubscription(id, { status: 'paused' }) },
+        { text: "Cancelled", style: 'destructive', onPress: () => updateSubscription(id, { status: 'cancelled' }) },
+        { text: "Cancel", style: "cancel" },
+      ]
+    );
+  };
 
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -78,6 +140,11 @@ const Subscriptions = () => {
                 cur === item.id ? null : item.id
               )
             }
+            onCancelPress={() => handleCancel(item.id, item.name)}
+            isCancelling={cancellingIds.includes(item.id)}
+            onChangePayment={() => handleChangePayment(item.id)}
+            onChangeCategory={() => handleChangeCategory(item.id)}
+            onChangeStatus={() => handleChangeStatus(item.id)}
           />
         )}
         extraData={expandedSubscriptionId}

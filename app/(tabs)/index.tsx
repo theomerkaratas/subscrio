@@ -14,6 +14,7 @@ import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
 import { useState } from "react";
 import { useUser } from "@clerk/expo";
 import { useSubscriptions } from "@/context/SubscriptionContext";
+import { useTheme } from "@/context/ThemeContext";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
@@ -21,6 +22,7 @@ export default function App() {
     const { user } = useUser();
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
     const { subscriptions, addSubscription } = useSubscriptions();
+    const { isDark } = useTheme();
     const [modalVisible, setModalVisible] = useState(false);
 
     const handleAddSubscription = (subscription: Subscription) => {
@@ -45,12 +47,12 @@ export default function App() {
                             </View>
 
                             <Pressable
-                                className="w-12 h-12 rounded-full bg-background dark:bg-[#1a1d27] p-2 justify-center items-center border border-muted dark:border-[rgba(255,255,255,0.1)]"
+                                className={isDark ? "w-12 h-12 rounded-full bg-transparent p-2 justify-center items-center border border-white" : "w-12 h-12 rounded-full bg-background dark:bg-[#1a1d27] p-2 justify-center items-center border border-muted dark:border-[rgba(255,255,255,0.1)]"}
                                 onPress={() => setModalVisible(true)}
                                 accessibilityRole="button"
                                 accessibilityLabel="Add subscription"
                             >
-                                <Image source={icons.add} className="w-6 h-6" />
+                                <Image source={icons.add} className="w-6 h-6" style={isDark ? { tintColor: '#ffffff' } : undefined} />
                             </Pressable>
                         </View>
 
@@ -80,7 +82,7 @@ export default function App() {
                             />
                         </View>
 
-                        <ListHeading title="All Subscriptions" />
+                        <ListHeading title="Subscriptions" />
                     </>
                 )}
                 data={subscriptions}
