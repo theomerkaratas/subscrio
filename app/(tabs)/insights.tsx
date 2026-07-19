@@ -58,7 +58,7 @@ const MonthlyInsights = () => {
   const { subscriptions } = useSubscriptions();
 
   return (
-    <SafeAreaView className="flex-1 bg-background">
+    <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117]">
       {/* ── Header ──────────────────────────────────────────────────── */}
       <View className="insights-header">
         {/* Back button */}

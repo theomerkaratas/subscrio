@@ -24,8 +24,13 @@ const Settings = () => {
         text: "Sign Out",
         style: "destructive",
         onPress: async () => {
-          await signOut()
-          router.replace("/(auth)/sign-in")
+          try {
+            await signOut()
+            router.replace("/(auth)/sign-in")
+          } catch (error) {
+            const message = error instanceof Error ? error.message : "Unable to sign out right now."
+            Alert.alert("Sign Out Failed", message)
+          }
         },
       },
     ])

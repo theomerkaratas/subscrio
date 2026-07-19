@@ -22,23 +22,25 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
 
   // Load persisted preference on mount
   useEffect(() => {
-    AsyncStorage.getItem(STORAGE_KEY).then((stored) => {
-      if (stored === "dark" || stored === "light") {
-        const dark = stored === "dark";
-        setIsDark(dark);
-        Appearance.setColorScheme(stored as ColorSchemeName);
-      }
-    });
+    AsyncStorage.getItem(STORAGE_KEY)
+      .then((stored) => {
+        if (stored === "dark" || stored === "light") {
+          const dark = stored === "dark";
+          setIsDark(dark);
+          Appearance.setColorScheme(stored as ColorSchemeName);
+        }
+      })
+      .catch((error) => {
+        console.error("Failed to load theme preference", error);
+      });
   }, []);
 
   const toggleTheme = () => {
-    setIsDark((prev) => {
-      const next = !prev;
-      const scheme: ColorSchemeName = next ? "dark" : "light";
-      Appearance.setColorScheme(scheme);
-      AsyncStorage.setItem(STORAGE_KEY, scheme);
-      return next;
-    });
+    setIsDark((prev) => !prev);
+
+    const nextScheme: ColorSchemeName = isDark ? "light" : "dark";
+    Appearance.setColorScheme(nextScheme);
+    AsyncStorage.setItem(STORAGE_KEY, nextScheme);
   };
 
   return (

@@ -796,16 +796,26 @@
  */
 
 @media (prefers-color-scheme: dark) {
+    :root {
+        --color-background: #0f1117;
+        --color-foreground: #f0ede4;
+        --color-card: #1a1d27;
+        --color-muted: #252836;
+        --color-muted-foreground: rgba(255,255,255,0.55);
+        --color-primary: #f0ede4;
+        --color-accent: #ea7a53;
+        --color-border: rgba(255,255,255,0.1);
+    }
     /* ── Upcoming subscription card ─── */
     .upcoming-card { @apply border-[rgba(255,255,255,0.1)] bg-[#0f1117]; }
-    .upcoming-icon-wrap { @apply bg-[#252836]; }
+    /* Logo chip stays cream (bg-muted) so brand logos read the same as light mode */
     .upcoming-price,
     .upcoming-name { @apply text-[#f0ede4]; }
     .upcoming-meta { @apply text-[rgba(255,255,255,0.55)]; }
 
     /* ── Subscription card ─── */
     .sub-card { @apply border-[rgba(255,255,255,0.1)]; }
-    .sub-icon-wrap { @apply bg-[#252836]; }
+    /* Logo chip stays cream (bg-muted) so brand logos read the same as light mode */
     .sub-title,
     .sub-price,
     .sub-value { @apply text-[#f0ede4]; }
@@ -861,33 +871,24 @@
     .insights-section-title { @apply text-[#f0ede4]; }
     .insights-view-all-btn { @apply border-[rgba(255,255,255,0.15)]; }
     .insights-view-all-text { @apply text-[#f0ede4]; }
-    .insights-chart-card,
-    .insights-area-chart-card { @apply bg-[#252836]; }
-    .insights-yaxis-label,
-    .insights-xaxis-label,
-    .insights-area-xaxis-label,
-    .insights-area-yaxis-label { @apply text-[rgba(255,255,255,0.55)]; }
-    .insights-bar-default { @apply bg-[#f0ede4]; }
-    .insights-bubble { @apply bg-[#1a1d27]; }
+    /*
+     * Chart sections (bar chart + spending-over-time area chart) stay in their
+     * light styling — cream card, dark axis labels/bars/grid — so the inline
+     * brand/category fill colors render on their intended background. Do NOT
+     * add dark overrides for .insights-chart-card / .insights-area-chart-card
+     * or their inner axis-label/bar/bubble/breakdown/legend selectors.
+     */
     .insights-expenses-card { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }
     .insights-expenses-label,
     .insights-expenses-amount { @apply text-[#f0ede4]; }
     .insights-expenses-date,
     .insights-expenses-change { @apply text-[rgba(255,255,255,0.55)]; }
-    .insights-history-icon-wrap { @apply bg-[#252836]; }
+    /* Logo chip stays cream (bg-muted) so brand logos read the same as light mode */
     .insights-history-name,
     .insights-history-price { @apply text-[#f0ede4]; }
     .insights-history-date,
     .insights-history-billing { @apply text-[rgba(255,255,255,0.55)]; }
-    .insights-area-breakdown { @apply border-[rgba(255,255,255,0.1)] bg-[#1a1d27]; }
-    .insights-area-breakdown-month { @apply text-[rgba(255,255,255,0.55)]; }
-    .insights-area-breakdown-total,
-    .insights-area-breakdown-name,
-    .insights-area-breakdown-amount { @apply text-[#f0ede4]; }
-    .insights-area-breakdown-hint { @apply text-[rgba(255,255,255,0.55)]; }
-    .insights-area-legend-label { @apply text-[rgba(255,255,255,0.55)]; }
-    .insights-area-xaxis-label-active { @apply text-[#f0ede4]; }
-    .insights-area-col-active-bar { @apply bg-[#f0ede4]; }
+    /* Area-chart breakdown/legend/active markers stay light (see chart note above) */
 
     /* ── Home empty state ─── */
     .home-empty-state { @apply text-[rgba(255,255,255,0.55)]; }

@@ -5,11 +5,13 @@ import { styled } from "nativewind";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import { useSubscriptions } from "@/context/SubscriptionContext";
+import { useTheme } from "@/context/ThemeContext";
 
 const SafeAreaView = styled(RNSafeAreaView);
 
 const Subscriptions = () => {
   const { subscriptions } = useSubscriptions();
+  const { isDark } = useTheme();
   const [query, setQuery] = useState("");
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
 
@@ -43,7 +45,7 @@ const Subscriptions = () => {
         <TextInput
           className="subs-search-input"
           placeholder="Search by name, category…"
-          placeholderTextColor="rgba(0,0,0,0.35)"
+          placeholderTextColor={isDark ? "rgba(255,255,255,0.55)" : "rgba(0,0,0,0.45)"}
           value={query}
           onChangeText={setQuery}
           returnKeyType="search"
