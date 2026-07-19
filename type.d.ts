@@ -23,7 +23,7 @@ declare global {
         startDate?: string;
         price: number;
         currency?: string;
-        billing: string;
+        billing: "Monthly" | "Yearly" | "One-time";
         renewalDate?: string;
         color?: string;
     }

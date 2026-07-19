@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text } from 'react-native'
 import React from 'react'
 
 interface ListHeadingProps {
@@ -9,10 +9,6 @@ const ListHeading = ({ title }: ListHeadingProps) => {
   return (
     <View className="list-head">
       <Text className="list-title">{title}</Text>
-
-      <TouchableOpacity className="list-action">
-        <Text className="list-action-text">View All</Text>
-      </TouchableOpacity>
     </View>
   )
 }

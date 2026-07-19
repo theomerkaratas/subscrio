@@ -1,5 +1,5 @@
 import "../../global.css"
-import { Text, View, TouchableOpacity, Alert, Image, Switch } from 'react-native'
+import { Text, View, TouchableOpacity, Alert, Image, Switch, ScrollView } from 'react-native'
 import React from 'react'
 import { styled } from "nativewind"
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context"
@@ -8,14 +8,21 @@ import { useRouter } from "expo-router"
 import images from "@/constants/images"
 import dayjs from "dayjs"
 import { useTheme } from "@/context/ThemeContext"
+import { useSubscriptions } from "@/context/SubscriptionContext"
+import clsx from "clsx"
 
 const SafeAreaView = styled(RNSafeAreaView)
+
+const CURRENCIES = ["USD", "EUR", "TRY", "JPY"]
+
+import { EXCHANGE_RATES } from "@/lib/utils"
 
 const Settings = () => {
   const { signOut } = useAuth()
   const { user } = useUser()
   const router = useRouter()
   const { isDark, toggleTheme } = useTheme()
+  const { currency, updateCurrency } = useSubscriptions()
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -37,8 +44,13 @@ const Settings = () => {
   }
 
   return (
-    <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117] p-5">
-      <Text className="text-2xl font-sans-bold text-primary dark:text-[#f0ede4] mb-6">Settings</Text>
+    <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117]" edges={['top', 'left', 'right']}>
+      <ScrollView 
+        className="flex-1" 
+        contentContainerStyle={{ paddingHorizontal: 20, paddingTop: 20, paddingBottom: 150 }}
+        showsVerticalScrollIndicator={false}
+      >
+        <Text className="text-2xl font-sans-bold text-primary dark:text-[#f0ede4] mb-6">Settings</Text>
 
       {/* Account section */}
       <View className="rounded-3xl border border-border dark:border-[rgba(255,255,255,0.1)] bg-card dark:bg-[#1a1d27] p-5 mb-4">
@@ -89,6 +101,65 @@ const Settings = () => {
         </View>
       </View>
 
+      {/* Currency section */}
+      <View className="rounded-3xl border border-border dark:border-[rgba(255,255,255,0.1)] bg-card dark:bg-[#1a1d27] p-5 mb-4">
+        <Text className="text-xs font-sans-semibold uppercase tracking-[1px] text-muted-foreground dark:text-[rgba(255,255,255,0.55)] mb-4">
+          Preferences
+        </Text>
+
+        <View className="gap-4">
+          <View>
+            <Text className="text-base font-sans-semibold text-primary dark:text-[#f0ede4] mb-3">
+              Currency
+            </Text>
+            <View className="flex-row gap-2">
+              {CURRENCIES.map((cur) => (
+                <TouchableOpacity
+                  key={cur}
+                  onPress={() => updateCurrency(cur)}
+                  className={clsx(
+                    "flex-1 items-center justify-center py-2 rounded-xl border",
+                    currency === cur 
+                      ? "bg-accent border-accent" 
+                      : "bg-transparent border-border dark:border-[rgba(255,255,255,0.1)]"
+                  )}
+                >
+                  <Text className={clsx(
+                    "text-sm font-sans-bold",
+                    currency === cur ? "text-primary dark:text-[#0f1117]" : "text-muted-foreground"
+                  )}>
+                    {cur}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </View>
+      </View>
+
+      {/* Currency Exchange section */}
+      <View className="rounded-3xl border border-border dark:border-[rgba(255,255,255,0.1)] bg-card dark:bg-[#1a1d27] p-5 mb-4">
+        <Text className="text-xs font-sans-semibold uppercase tracking-[1px] text-muted-foreground dark:text-[rgba(255,255,255,0.55)] mb-4">
+          Currency Exchange
+        </Text>
+
+        <View className="gap-4">
+          {EXCHANGE_RATES.map((item, index) => (
+            <View key={index} className="flex-row items-center justify-between">
+              <View className="flex-row items-center gap-2">
+                <Text className="text-base font-sans-semibold text-primary dark:text-[#f0ede4]">
+                  1 {item.from}
+                </Text>
+                <Text className="text-sm font-sans-medium text-muted-foreground">=</Text>
+                <Text className="text-base font-sans-bold text-accent">
+                  {item.rate.toFixed(2)} {item.to}
+                </Text>
+              </View>
+            </View>
+          ))}
+        </View>
+      </View>
+
       {/* Appearance section */}
       <View className="rounded-3xl border border-border dark:border-[rgba(255,255,255,0.1)] bg-card dark:bg-[#1a1d27] p-5 mb-4">
         <Text className="text-xs font-sans-semibold uppercase tracking-[1px] text-muted-foreground dark:text-[rgba(255,255,255,0.55)] mb-4">
@@ -124,6 +195,10 @@ const Settings = () => {
       >
         <Text className="text-base font-sans-bold text-primary dark:text-[#0f1117]">Sign Out</Text>
       </TouchableOpacity>
+
+      {/* Bottom Spacer */}
+      <View style={{ height: 40 }} />
+      </ScrollView>
     </SafeAreaView>
   )
 }

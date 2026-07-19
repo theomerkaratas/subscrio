@@ -20,7 +20,14 @@ type MonthData    = { key: string; label: string; total: number; contributions: 
 
 // ─── Data helpers ─────────────────────────────────────────────────────────────
 
-function toMonthlyCost(sub: Subscription): number {
+function toMonthlyCost(sub: Subscription, monthStart: dayjs.Dayjs, monthEnd: dayjs.Dayjs): number {
+  if (sub.billing === 'One-time') {
+    const start = sub.startDate ? dayjs(sub.startDate) : null;
+    if (start && start.isAfter(monthStart.subtract(1, 'ms')) && start.isBefore(monthEnd.add(1, 'ms'))) {
+      return sub.price;
+    }
+    return 0;
+  }
   return sub.billing === 'Yearly' ? sub.price / 12 : sub.price;
 }
 
@@ -28,13 +35,14 @@ function buildMonthlyData(subscriptions: Subscription[]): MonthData[] {
   const now = dayjs();
   return Array.from({ length: NUM_MONTHS }, (_, i) => {
     const m        = now.subtract(NUM_MONTHS - 1 - i, 'month');
+    const monthStart = m.startOf('month');
     const monthEnd = m.endOf('month');
     const contributions: Contribution[] = [];
 
     subscriptions.forEach((sub, si) => {
       const start = sub.startDate ? dayjs(sub.startDate) : null;
       if (start && start.isAfter(monthEnd)) return;
-      const amount = toMonthlyCost(sub);
+      const amount = toMonthlyCost(sub, monthStart, monthEnd);
       if (amount <= 0) return;
       contributions.push({
         id: sub.id,

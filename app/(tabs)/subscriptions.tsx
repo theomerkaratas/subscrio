@@ -16,7 +16,7 @@ const Subscriptions = () => {
   const [cancellingIds, setCancellingIds] = useState<string[]>([]);
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
 
-  const handleCancel = (id: string, name?: string) => {
+  const handleCancel = (id: string, name?: string, isOneTime?: boolean) => {
     if (!id) return;
     Alert.alert(
       "Cancel subscription",
@@ -140,7 +140,7 @@ const Subscriptions = () => {
                 cur === item.id ? null : item.id
               )
             }
-            onCancelPress={() => handleCancel(item.id, item.name)}
+            onCancelPress={() => handleCancel(item.id, item.name, item.billing === "One-time")}
             isCancelling={cancellingIds.includes(item.id)}
             onChangePayment={() => handleChangePayment(item.id)}
             onChangeCategory={() => handleChangeCategory(item.id)}
