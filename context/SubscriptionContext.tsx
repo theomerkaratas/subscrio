@@ -1,17 +1,23 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { HOME_SUBSCRIPTIONS } from "@/constants/data";
+import { HOME_SUBSCRIPTIONS, HOME_BALANCE } from "@/constants/data";
 
 interface SubscriptionContextType {
   subscriptions: Subscription[];
+  balance: number;
+  currency: string;
   addSubscription: (subscription: Subscription) => void;
   cancelSubscription: (id: string) => Promise<void>;
   updateSubscription: (id: string, patch: Partial<Subscription>) => void;
+  updateBalance: (amount: number) => void;
+  updateCurrency: (currency: string) => void;
 }
 
 const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 export function SubscriptionProvider({ children }: { children: ReactNode }) {
   const [subscriptions, setSubscriptions] = useState<Subscription[]>(HOME_SUBSCRIPTIONS);
+  const [balance, setBalance] = useState<number>(HOME_BALANCE.amount);
+  const [currency, setCurrency] = useState<string>("USD");
 
   const addSubscription = (subscription: Subscription) => {
     setSubscriptions((prev) => [subscription, ...prev]);
@@ -28,8 +34,16 @@ export function SubscriptionProvider({ children }: { children: ReactNode }) {
     setSubscriptions((prev) => prev.map((s) => (s.id === id ? { ...s, ...patch } : s)));
   };
 
+  const updateBalance = (amount: number) => {
+    setBalance((prev) => prev + amount);
+  };
+
+  const updateCurrency = (newCurrency: string) => {
+    setCurrency(newCurrency);
+  };
+
   return (
-    <SubscriptionContext.Provider value={{ subscriptions, addSubscription, cancelSubscription, updateSubscription }}>
+    <SubscriptionContext.Provider value={{ subscriptions, balance, currency, addSubscription, cancelSubscription, updateSubscription, updateBalance, updateCurrency }}>
       {children}
     </SubscriptionContext.Provider>
   );

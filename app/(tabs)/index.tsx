@@ -11,6 +11,7 @@ import ListHeading from "@/components/ListHeading";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
+import AdjustBalanceModal from "@/components/AdjustBalanceModal";
 import { useState } from "react";
 import { useUser } from "@clerk/expo";
 import { useSubscriptions } from "@/context/SubscriptionContext";
@@ -21,9 +22,10 @@ const SafeAreaView = styled(RNSafeAreaView);
 export default function App() {
     const { user } = useUser();
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
-    const { subscriptions, addSubscription } = useSubscriptions();
+    const { subscriptions, addSubscription, balance, updateBalance, currency } = useSubscriptions();
     const { isDark } = useTheme();
     const [modalVisible, setModalVisible] = useState(false);
+    const [adjustModalVisible, setAdjustModalVisible] = useState(false);
 
     const handleAddSubscription = (subscription: Subscription) => {
         addSubscription(subscription);
@@ -57,11 +59,21 @@ export default function App() {
                         </View>
 
                         <View className="home-balance-card">
-                            <Text className="home-balance-label">Balance</Text>
+                            <View className="flex-row items-center justify-between">
+                                <Text className="home-balance-label">Balance</Text>
+                                <Pressable
+                                    onPress={() => setAdjustModalVisible(true)}
+                                    className="h-8 items-center justify-center rounded-full bg-white/20 px-3"
+                                    accessibilityRole="button"
+                                    accessibilityLabel="Adjust balance"
+                                >
+                                    <Text className="text-sm font-sans-bold text-white">Adjust</Text>
+                                </Pressable>
+                            </View>
 
                             <View className="home-balance-row">
                                 <Text className="home-balance-amount">
-                                    {formatCurrency(HOME_BALANCE.amount)}
+                                    {formatCurrency(balance, currency)}
                                 </Text>
                                 <Text className="home-balance-date">
                                     {dayjs(HOME_BALANCE.nextRenewalDate).format("MM/DD")}
@@ -75,7 +87,7 @@ export default function App() {
                             <FlatList
                                 data={UPCOMING_SUBSCRIPTIONS}
                                 keyExtractor={(item) => item.id}
-                                renderItem={({ item }) => <UpcomingSubscriptionCard {...item} />}
+                                renderItem={({ item }) => <UpcomingSubscriptionCard {...item} currency={currency} />}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
                                 ListEmptyComponent={<Text className="home-empty-state">No upcoming renewals yet.</Text>}
@@ -105,6 +117,12 @@ export default function App() {
                 visible={modalVisible}
                 onClose={() => setModalVisible(false)}
                 onSubmit={handleAddSubscription}
+            />
+
+            <AdjustBalanceModal
+                visible={adjustModalVisible}
+                onClose={() => setAdjustModalVisible(false)}
+                onSubmit={updateBalance}
             />
         </SafeAreaView>
     );

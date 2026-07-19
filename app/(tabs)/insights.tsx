@@ -1,9 +1,8 @@
 import '../../global.css';
 import React from 'react';
-import { View, Text, Image, ScrollView, Pressable } from 'react-native';
+import { View, Text, ScrollView, Pressable } from 'react-native';
 import { styled } from 'nativewind';
 import { SafeAreaView as RNSafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
 import { icons } from '@/constants/icons';
 import InsightsBarChart, { BarChartDataPoint } from '@/components/InsightsBarChart';
 import InsightsHistoryCard, { InsightsHistoryItem } from '@/components/InsightsHistoryCard';
@@ -54,36 +53,14 @@ const EXPENSES = {
 // ─── Screen ───────────────────────────────────────────────────────────────────
 
 const MonthlyInsights = () => {
-  const router = useRouter();
-  const { subscriptions } = useSubscriptions();
+  const { subscriptions, currency } = useSubscriptions();
 
   return (
     <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117]">
       {/* ── Header ──────────────────────────────────────────────────── */}
       <View className="insights-header">
-        {/* Back button */}
-        <Pressable
-          className="insights-header-btn"
-          onPress={() => router.back()}
-          accessibilityRole="button"
-          accessibilityLabel="Go back"
-        >
-          <Image source={icons.back} className="insights-header-icon" resizeMode="contain" />
-        </Pressable>
-
         {/* Title */}
         <Text className="insights-header-title">Monthly Insights</Text>
-
-        {/* Context menu — TODO: implement sheet/modal with export & filter options */}
-        <Pressable
-          className="insights-header-btn"
-          accessibilityRole="button"
-          accessibilityLabel="More options"
-          disabled
-          style={{ opacity: 0.4 }}
-        >
-          <Image source={icons.menu} className="insights-header-icon" resizeMode="contain" />
-        </Pressable>
       </View>
 
       {/* ── Scrollable body ─────────────────────────────────────────── */}
@@ -95,16 +72,6 @@ const MonthlyInsights = () => {
         {/* ── Upcoming section ──────────────────────────────────────── */}
         <View className="insights-section-head">
           <Text className="insights-section-title">Upcoming</Text>
-          {/* TODO: navigate to a dedicated upcoming-charges screen when it exists */}
-          <Pressable
-            className="insights-view-all-btn"
-            accessibilityRole="button"
-            accessibilityLabel="View all upcoming"
-            disabled
-            style={{ opacity: 0.4 }}
-          >
-            <Text className="insights-view-all-text">View all</Text>
-          </Pressable>
         </View>
 
         {/* Bar chart */}
@@ -124,7 +91,7 @@ const MonthlyInsights = () => {
           </View>
           <View className="insights-expenses-right">
             <Text className="insights-expenses-amount">
-              -{new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(EXPENSES.total)}
+              -{new Intl.NumberFormat('en-US', { style: 'currency', currency }).format(EXPENSES.total)}
             </Text>
             <Text className="insights-expenses-change">{EXPENSES.percentChange}</Text>
           </View>
@@ -139,16 +106,6 @@ const MonthlyInsights = () => {
         {/* ── History section ───────────────────────────────────────── */}
         <View className="insights-section-head">
           <Text className="insights-section-title">History</Text>
-          {/* TODO: navigate to a dedicated payment-history screen when it exists */}
-          <Pressable
-            className="insights-view-all-btn"
-            accessibilityRole="button"
-            accessibilityLabel="View all history"
-            disabled
-            style={{ opacity: 0.4 }}
-          >
-            <Text className="insights-view-all-text">View all</Text>
-          </Pressable>
         </View>
 
         {/* History list */}

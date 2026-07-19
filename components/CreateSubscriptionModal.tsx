@@ -13,10 +13,12 @@ import {
 import { clsx } from "clsx";
 import dayjs from "dayjs";
 import { icons } from "@/constants/icons";
+import { useSubscriptions } from "@/context/SubscriptionContext";
 
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 type Frequency = "Monthly" | "Yearly";
+type PaymentType = "Subscription" | "One-time";
 
 interface Props {
   visible: boolean;
@@ -65,9 +67,11 @@ const EMPTY_FORM = {
   price: "",
   frequency: "Monthly" as Frequency,
   category: "",
+  paymentType: "Subscription" as PaymentType,
 };
 
 const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
+  const { currency } = useSubscriptions();
   const [form, setForm] = useState(EMPTY_FORM);
   const [errors, setErrors] = useState<{ name?: string; price?: string }>({});
 
@@ -76,7 +80,7 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
   const validate = (): boolean => {
     const next: typeof errors = {};
     if (!form.name.trim()) next.name = "Name is required.";
-    const trimmedPrice = form.price.trim();
+    const trimmedPrice = form.price.trim().replace(",", ".");
     const isNumeric = /^[0-9]+(\.[0-9]+)?$/.test(trimmedPrice);
     const parsed = Number(trimmedPrice);
     if (!trimmedPrice || !isNumeric || isNaN(parsed) || !Number.isFinite(parsed) || parsed <= 0)
@@ -90,17 +94,18 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
   const handleSubmit = () => {
     if (!validate()) return;
     const now = dayjs().toISOString();
-    const parsedPrice = Number(form.price.trim());
+    const parsedPrice = Number(form.price.trim().replace(",", "."));
+    const isOneTime = form.paymentType === "One-time";
     const subscription: Subscription = {
       id: generateId(form.name),
       name: form.name.trim(),
       price: parseFloat(parsedPrice.toFixed(2)),
-      currency: "USD",
-      billing: form.frequency,
+      currency,
+      billing: isOneTime ? "One-time" : form.frequency,
       category: form.category || "Other",
       status: "active",
       startDate: now,
-      renewalDate: calcRenewalDate(form.frequency),
+      renewalDate: isOneTime ? undefined : calcRenewalDate(form.frequency),
       icon: icons.wallet,
       color: CATEGORY_COLORS[form.category] ?? CATEGORY_COLORS["Other"],
     };
@@ -138,7 +143,7 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
       >
         {/* Header */}
         <View className="modal-header">
-          <Text className="modal-title">New Subscription</Text>
+          <Text className="modal-title">New Payment</Text>
           <TouchableOpacity 
             className="modal-close" 
             onPress={handleClose}
@@ -155,6 +160,31 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
           showsVerticalScrollIndicator={false}
           contentContainerStyle={{ paddingBottom: 32 }}
         >
+          {/* ── Payment Type ─────────────────────────────────────────── */}
+          <View className="auth-field">
+            <Text className="auth-label">Payment Type</Text>
+            <View className="picker-row">
+              {(["Subscription", "One-time"] as PaymentType[]).map((type) => (
+                <TouchableOpacity
+                  key={type}
+                  className={clsx(
+                    "picker-option",
+                    form.paymentType === type && "picker-option-active"
+                  )}
+                  onPress={() => setForm((f) => ({ ...f, paymentType: type }))}
+                >
+                  <Text
+                    className={clsx(
+                      "picker-option-text",
+                      form.paymentType === type && "picker-option-text-active"
+                    )}
+                  >
+                    {type}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
           {/* ── Name ──────────────────────────────────────────────────── */}
           <View className="auth-field">
             <Text className="auth-label">Name</Text>
@@ -197,30 +227,32 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
           </View>
 
           {/* ── Frequency ─────────────────────────────────────────────── */}
-          <View className="auth-field">
-            <Text className="auth-label">Billing Frequency</Text>
-            <View className="picker-row">
-              {(["Monthly", "Yearly"] as Frequency[]).map((freq) => (
-                <TouchableOpacity
-                  key={freq}
-                  className={clsx(
-                    "picker-option",
-                    form.frequency === freq && "picker-option-active"
-                  )}
-                  onPress={() => setForm((f) => ({ ...f, frequency: freq }))}
-                >
-                  <Text
+          {form.paymentType === "Subscription" && (
+            <View className="auth-field">
+              <Text className="auth-label">Billing Frequency</Text>
+              <View className="picker-row">
+                {(["Monthly", "Yearly"] as Frequency[]).map((freq) => (
+                  <TouchableOpacity
+                    key={freq}
                     className={clsx(
-                      "picker-option-text",
-                      form.frequency === freq && "picker-option-text-active"
+                      "picker-option",
+                      form.frequency === freq && "picker-option-active"
                     )}
+                    onPress={() => setForm((f) => ({ ...f, frequency: freq }))}
                   >
-                    {freq}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+                    <Text
+                      className={clsx(
+                        "picker-option-text",
+                        form.frequency === freq && "picker-option-text-active"
+                      )}
+                    >
+                      {freq}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
             </View>
-          </View>
+          )}
 
           {/* ── Category ──────────────────────────────────────────────── */}
           <View className="auth-field">
@@ -262,7 +294,7 @@ const CreateSubscriptionModal = ({ visible, onClose, onSubmit }: Props) => {
             onPress={handleSubmit}
             disabled={isSubmitDisabled}
           >
-            <Text className="auth-button-text">Add Subscription</Text>
+            <Text className="auth-button-text">Add {form.paymentType}</Text>
           </TouchableOpacity>
         </ScrollView>
       </KeyboardAvoidingView>

@@ -58,8 +58,8 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
                         </View>
                         <View className="sub-row">
                             <View className="sub-row-copy">
-                                <Text className="sub-label">Renewal Date:</Text>
-                                <Text className="sub-value" numberOfLines={1} ellipsizeMode="tail">{renewalDate ? formatSubscriptionDateTime(renewalDate) : 'No date set'}</Text>
+                                <Text className="sub-label">{billing === "One-time" ? "Date:" : "Renewal Date:"}</Text>
+                                <Text className="sub-value" numberOfLines={1} ellipsizeMode="tail">{renewalDate ? formatSubscriptionDateTime(renewalDate) : startDate ? formatSubscriptionDateTime(startDate) : 'No date set'}</Text>
                             </View>
                         </View>
                         <View className="sub-row">
@@ -79,7 +79,7 @@ const SubscriptionCard = ({ name, price, currency, icon, billing, color, categor
                                 className={clsx('sub-cancel w-full items-center justify-center px-6', status === 'cancelled' && 'sub-cancel-disabled')}
                             >
                                 <Text className="sub-cancel-text">
-                                    {status === 'cancelled' ? 'Cancelled' : isCancelling ? 'Cancelling...' : 'Cancel Subscription'}
+                                    {status === 'cancelled' ? 'Cancelled' : isCancelling ? 'Cancelling...' : billing === "One-time" ? 'Remove' : 'Cancel Subscription'}
                                 </Text>
                             </TouchableOpacity>
                         </View>

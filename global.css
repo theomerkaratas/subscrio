@@ -485,7 +485,7 @@
 
     /* Header row */
     .insights-header {
-        @apply flex-row items-center justify-between px-5 py-3;
+        @apply flex-row items-center justify-center px-5 py-3;
     }
 
     .insights-header-btn {
@@ -497,7 +497,7 @@
     }
 
     .insights-header-title {
-        @apply text-xl font-sans-bold text-primary;
+        @apply text-3xl font-sans-extrabold text-primary;
     }
 
     /* Section heading row (title + "View all") */
