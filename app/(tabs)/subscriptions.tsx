@@ -26,7 +26,7 @@ const Subscriptions = () => {
   }, [query, subscriptions]);
 
   return (
-    <SafeAreaView className="flex-1 bg-background p-5">
+    <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117] p-5">
       {/* Screen Header — outside FlatList so it never remounts */}
       <View className="subs-screen-header">
         <Text className="subs-screen-title">Subscriptions</Text>

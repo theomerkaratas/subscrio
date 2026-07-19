@@ -6,6 +6,7 @@ import { components, colors } from "@/constants/theme";
 import clsx from "clsx";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useAuth } from "@clerk/expo";
+import { useTheme } from "@/context/ThemeContext";
 
 const tabBar = components.tabBar;
 
@@ -17,6 +18,7 @@ type TabIconProps = {
 const TabsLayout = () => {
   const insets = useSafeAreaInsets();
   const { isSignedIn, isLoaded } = useAuth();
+  const { isDark } = useTheme();
 
   if (!isLoaded) return null;
   if (!isSignedIn) return <Redirect href="/(auth)/sign-in" />;
@@ -41,7 +43,7 @@ const TabsLayout = () => {
           height: tabBar.height,
           marginHorizontal: tabBar.horizontalInset,
           borderRadius: tabBar.radius,
-          backgroundColor: colors.primary,
+          backgroundColor: isDark ? "#1a1d27" : colors.primary,
           borderTopWidth: 0,
           elevation: 0,
         },

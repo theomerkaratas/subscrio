@@ -5,6 +5,7 @@ import { useEffect } from "react";
 import { ClerkProvider, useAuth } from "@clerk/expo";
 import { tokenCache } from "@clerk/expo/token-cache";
 import { SubscriptionProvider } from "@/context/SubscriptionContext";
+import { ThemeProvider } from "@/context/ThemeContext";
 
 SplashScreen.preventAutoHideAsync();
 
@@ -38,10 +39,12 @@ function InitialLayout() {
 
 export default function RootLayout() {
   return (
-    <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
-      <SubscriptionProvider>
-        <InitialLayout />
-      </SubscriptionProvider>
-    </ClerkProvider>
+    <ThemeProvider>
+      <ClerkProvider publishableKey={publishableKey} tokenCache={tokenCache}>
+        <SubscriptionProvider>
+          <InitialLayout />
+        </SubscriptionProvider>
+      </ClerkProvider>
+    </ThemeProvider>
   );
 }
