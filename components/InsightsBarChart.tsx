@@ -14,7 +14,8 @@ type InsightsBarChartProps = {
 };
 
 const InsightsBarChart = ({ data, maxValue, yAxisSteps }: InsightsBarChartProps) => {
-  const computedMax = maxValue ?? Math.ceil(Math.max(...data.map((d) => d.value)) / 5) * 5;
+  const rawMax = data.length > 0 ? Math.max(...data.map((d) => d.value)) : 0;
+  const computedMax = maxValue ?? (Math.ceil(Math.max(rawMax, 0) / 5) * 5 || 1);
   const steps = yAxisSteps ?? [0, 5, 25, 35, 45];
 
   return (

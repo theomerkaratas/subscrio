@@ -75,6 +75,12 @@ const AreaColumn = ({ month, colH, isActive, isDimmed, onPressIn, onPressOut }: 
   <Pressable
     onPressIn={onPressIn}
     onPressOut={onPressOut}
+    accessibilityRole="button"
+    accessibilityLabel={
+      month.total > 0
+        ? `${month.label}: $${month.total.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })} across ${month.contributions.length} subscription${month.contributions.length === 1 ? '' : 's'}`
+        : `${month.label}: no spending`
+    }
     style={{
       width: COL_WIDTH,
       height: CHART_HEIGHT,

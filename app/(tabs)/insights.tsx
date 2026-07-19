@@ -74,11 +74,13 @@ const MonthlyInsights = () => {
         {/* Title */}
         <Text className="insights-header-title">Monthly Insights</Text>
 
-        {/* Context menu */}
+        {/* Context menu — TODO: implement sheet/modal with export & filter options */}
         <Pressable
           className="insights-header-btn"
           accessibilityRole="button"
           accessibilityLabel="More options"
+          disabled
+          style={{ opacity: 0.4 }}
         >
           <Image source={icons.menu} className="insights-header-icon" resizeMode="contain" />
         </Pressable>
@@ -93,10 +95,13 @@ const MonthlyInsights = () => {
         {/* ── Upcoming section ──────────────────────────────────────── */}
         <View className="insights-section-head">
           <Text className="insights-section-title">Upcoming</Text>
+          {/* TODO: navigate to a dedicated upcoming-charges screen when it exists */}
           <Pressable
             className="insights-view-all-btn"
             accessibilityRole="button"
             accessibilityLabel="View all upcoming"
+            disabled
+            style={{ opacity: 0.4 }}
           >
             <Text className="insights-view-all-text">View all</Text>
           </Pressable>
@@ -134,10 +139,13 @@ const MonthlyInsights = () => {
         {/* ── History section ───────────────────────────────────────── */}
         <View className="insights-section-head">
           <Text className="insights-section-title">History</Text>
+          {/* TODO: navigate to a dedicated payment-history screen when it exists */}
           <Pressable
             className="insights-view-all-btn"
             accessibilityRole="button"
             accessibilityLabel="View all history"
+            disabled
+            style={{ opacity: 0.4 }}
           >
             <Text className="insights-view-all-text">View all</Text>
           </Pressable>
