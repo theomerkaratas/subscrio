@@ -6,7 +6,7 @@ interface UpcomingSubscriptionCardProps {
   name: string
   price: number
   daysLeft: number
-  icon: any
+  icon: any | string
   currency?: string
 }
 
@@ -15,7 +15,11 @@ const UpcomingSubscriptionCard = ({ name, price, daysLeft, icon, currency }: Upc
     <View className="upcoming-card">
       <View className="upcoming-row">
         <View className="upcoming-icon-wrap">
-          <Image source={icon} className="upcoming-icon" />
+          <Image 
+            source={typeof icon === 'string' ? { uri: icon } : icon} 
+            className="upcoming-icon" 
+            style={typeof icon === 'string' ? { width: 24, height: 24, borderRadius: 4 } : undefined}
+          />
         </View>
         <View>
           <Text className="upcoming-price">{formatCurrency(price, currency)}</Text>

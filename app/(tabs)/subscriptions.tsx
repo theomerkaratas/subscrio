@@ -4,6 +4,7 @@ import React, { useState, useMemo } from 'react'
 import { styled } from "nativewind";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import SubscriptionCard from "@/components/SubscriptionCard";
+import CreateSubscriptionModal, { EditField } from "@/components/CreateSubscriptionModal";
 import { useSubscriptions } from "@/context/SubscriptionContext";
 import { useTheme } from "@/context/ThemeContext";
 
@@ -15,6 +16,26 @@ const Subscriptions = () => {
   const [query, setQuery] = useState("");
   const [cancellingIds, setCancellingIds] = useState<string[]>([]);
   const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
+
+  const [editModalVisible, setEditModalVisible] = useState(false);
+  const [subscriptionToEdit, setSubscriptionToEdit] = useState<Subscription | null>(null);
+  const [editField, setEditField] = useState<EditField | undefined>(undefined);
+
+  const handleEdit = (subId: string, field?: EditField) => {
+    const sub = subscriptions.find(s => s.id === subId);
+    if (sub) {
+      setSubscriptionToEdit(sub);
+      setEditField(field);
+      setEditModalVisible(true);
+    }
+  };
+
+  const handleUpdateSubscription = (updatedSub: Subscription) => {
+    updateSubscription(updatedSub.id, updatedSub);
+    setEditModalVisible(false);
+    setSubscriptionToEdit(null);
+    setEditField(undefined);
+  };
 
   const handleCancel = (id: string, name?: string, isOneTime?: boolean) => {
     if (!id) return;
@@ -35,44 +56,6 @@ const Subscriptions = () => {
             }
           },
         },
-      ]
-    );
-  };
-
-  const handleChangePayment = (id: string) => {
-    Alert.alert(
-      "Change payment method",
-      "Select a payment method:",
-      [
-        { text: "Card ****8530", onPress: () => updateSubscription(id, { paymentMethod: 'Card ****8530' }) },
-        { text: "PayPal", onPress: () => updateSubscription(id, { paymentMethod: 'PayPal' }) },
-        { text: "Cancel", style: "cancel" },
-      ]
-    );
-  };
-
-  const handleChangeCategory = (id: string) => {
-    Alert.alert(
-      "Change category",
-      "Choose a category:",
-      [
-        { text: "Productivity", onPress: () => updateSubscription(id, { category: 'Productivity' }) },
-        { text: "Utilities", onPress: () => updateSubscription(id, { category: 'Utilities' }) },
-        { text: "Other", onPress: () => updateSubscription(id, { category: 'Other' }) },
-        { text: "Cancel", style: "cancel" },
-      ]
-    );
-  };
-
-  const handleChangeStatus = (id: string) => {
-    Alert.alert(
-      "Change status",
-      "Set subscription status:",
-      [
-        { text: "Active", onPress: () => updateSubscription(id, { status: 'active' }) },
-        { text: "Paused", onPress: () => updateSubscription(id, { status: 'paused' }) },
-        { text: "Cancelled", style: 'destructive', onPress: () => updateSubscription(id, { status: 'cancelled' }) },
-        { text: "Cancel", style: "cancel" },
       ]
     );
   };
@@ -142,9 +125,9 @@ const Subscriptions = () => {
             }
             onCancelPress={() => handleCancel(item.id, item.name, item.billing === "One-time")}
             isCancelling={cancellingIds.includes(item.id)}
-            onChangePayment={() => handleChangePayment(item.id)}
-            onChangeCategory={() => handleChangeCategory(item.id)}
-            onChangeStatus={() => handleChangeStatus(item.id)}
+            onChangePayment={() => handleEdit(item.id, "payment")}
+            onChangeCategory={() => handleEdit(item.id, "category")}
+            onChangeStatus={() => handleEdit(item.id, "status")}
           />
         )}
         extraData={expandedSubscriptionId}
@@ -161,6 +144,18 @@ const Subscriptions = () => {
             </Text>
           </View>
         )}
+      />
+
+      <CreateSubscriptionModal
+        visible={editModalVisible}
+        onClose={() => {
+          setEditModalVisible(false);
+          setSubscriptionToEdit(null);
+          setEditField(undefined);
+        }}
+        onSubmit={handleUpdateSubscription}
+        subscription={subscriptionToEdit || undefined}
+        editField={editField}
       />
     </SafeAreaView>
   );

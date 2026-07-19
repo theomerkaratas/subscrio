@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { View, Text, Pressable, ScrollView } from 'react-native';
 import dayjs from 'dayjs';
+import Svg, { Path } from 'react-native-svg';
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -21,6 +22,13 @@ type MonthData    = { key: string; label: string; total: number; contributions: 
 // ─── Data helpers ─────────────────────────────────────────────────────────────
 
 function toMonthlyCost(sub: Subscription, monthStart: dayjs.Dayjs, monthEnd: dayjs.Dayjs): number {
+  const monthKey = monthStart.format('YYYY-MM');
+  if (sub.monthlyAdjustments && monthKey in sub.monthlyAdjustments) {
+    const adjustment = sub.monthlyAdjustments[monthKey];
+    if (adjustment === 'skip') return 0;
+    return adjustment;
+  }
+
   if (sub.billing === 'One-time') {
     const start = sub.startDate ? dayjs(sub.startDate) : null;
     if (start && start.isAfter(monthStart.subtract(1, 'ms')) && start.isBefore(monthEnd.add(1, 'ms'))) {
@@ -33,8 +41,21 @@ function toMonthlyCost(sub: Subscription, monthStart: dayjs.Dayjs, monthEnd: day
 
 function buildMonthlyData(subscriptions: Subscription[]): MonthData[] {
   const now = dayjs();
+  // If we have a subscription in the future (like Google Cloud in Nov 2026), 
+  // we might want the chart to end at that future month so it's visible.
+  let endMonth = now;
+  subscriptions.forEach(sub => {
+    const date = sub.renewalDate || sub.startDate;
+    if (date) {
+      const subDate = dayjs(date);
+      if (subDate.isAfter(endMonth)) {
+        endMonth = subDate;
+      }
+    }
+  });
+
   return Array.from({ length: NUM_MONTHS }, (_, i) => {
-    const m        = now.subtract(NUM_MONTHS - 1 - i, 'month');
+    const m        = endMonth.subtract(NUM_MONTHS - 1 - i, 'month');
     const monthStart = m.startOf('month');
     const monthEnd = m.endOf('month');
     const contributions: Contribution[] = [];
@@ -79,7 +100,7 @@ type ColumnProps = {
  * in the parent's map(), so React.memo's shallow comparison would always
  * fail anyway. With only 12 columns the re-render cost is negligible.
  */
-const AreaColumn = ({ month, colH, isActive, isDimmed, onPressIn, onPressOut }: ColumnProps) => (
+const SpendingBarChartColumn = ({ month, colH, isActive, isDimmed, onPressIn, onPressOut }: ColumnProps) => (
   <Pressable
     onPressIn={onPressIn}
     onPressOut={onPressOut}
@@ -104,8 +125,8 @@ const AreaColumn = ({ month, colH, isActive, isDimmed, onPressIn, onPressOut }: 
       />
     )}
 
-    {/* Stacked segments — column-reverse so first child sits at the bottom */}
-    <View style={{ width: COL_WIDTH, height: colH, flexDirection: 'column-reverse' }}>
+    {/* The stacked bar itself */}
+    <View style={{ width: COL_WIDTH - 12, marginHorizontal: 6, height: colH, borderRadius: 6, overflow: 'hidden', flexDirection: 'column-reverse' }}>
       {month.contributions.map(c => (
         <View
           key={c.id}
@@ -122,9 +143,9 @@ const AreaColumn = ({ month, colH, isActive, isDimmed, onPressIn, onPressOut }: 
 
 // ─── Main component ───────────────────────────────────────────────────────────
 
-type SpendingAreaChartProps = { subscriptions: Subscription[] };
+type SpendingBarChartProps = { subscriptions: Subscription[] };
 
-const SpendingAreaChart = ({ subscriptions }: SpendingAreaChartProps) => {
+const SpendingBarChart = ({ subscriptions }: SpendingBarChartProps) => {
   const [activeIndex, setActiveIndex] = useState<number | null>(null);
 
   // ── Derived data ────────────────────────────────────────────────────────────
@@ -151,8 +172,9 @@ const SpendingAreaChart = ({ subscriptions }: SpendingAreaChartProps) => {
   return (
     <View className="insights-area-chart-card">
 
-      {/* Y-axis max label */}
-      <Text className="insights-area-yaxis-label">${maxTotal.toFixed(0)}</Text>
+      {/* Y-axis max label removed */}
+      <View style={{ marginBottom: 4 }}>
+      </View>
 
       {/*
         ── Horizontal ScrollView ──────────────────────────────────────────────
@@ -170,16 +192,16 @@ const SpendingAreaChart = ({ subscriptions }: SpendingAreaChartProps) => {
         // when the user is scrolling horizontally inside this chart.
         nestedScrollEnabled
       >
-        <View style={{ width: COL_WIDTH * NUM_MONTHS }}>
+        <View style={{ width: COL_WIDTH * NUM_MONTHS, height: CHART_HEIGHT + 30 }}>
 
-          {/* ── Chart columns ─────────────────────────────────────────────── */}
+          {/* ── Chart columns ─────────── */}
           <View style={{ height: CHART_HEIGHT, flexDirection: 'row', alignItems: 'flex-end' }}>
             {data.map((month, i) => {
               const colH     = maxTotal > 0 ? (month.total / maxTotal) * CHART_HEIGHT : 0;
               const isActive = activeIndex === i;
               const isDimmed = activeIndex !== null && !isActive;
               return (
-                <AreaColumn
+                <SpendingBarChartColumn
                   key={month.key}
                   month={month}
                   colH={colH}
@@ -256,4 +278,4 @@ const SpendingAreaChart = ({ subscriptions }: SpendingAreaChartProps) => {
   );
 };
 
-export default SpendingAreaChart;
+export default SpendingBarChart;

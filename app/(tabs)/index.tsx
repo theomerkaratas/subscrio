@@ -3,16 +3,16 @@ import { Text, View, Image, Pressable, FlatList } from "react-native";
 import { styled } from "nativewind";
 import { SafeAreaView as RNSafeAreaView } from "react-native-safe-area-context";
 import images from "@/constants/images";
-import { HOME_USER, HOME_BALANCE, UPCOMING_SUBSCRIPTIONS } from "@/constants/data";
+import { HOME_USER, HOME_BALANCE, UPCOMING_SUBSCRIPTIONS, DUMMY_SUBSCRIPTIONS } from "@/constants/data";
 import { icons } from "@/constants/icons";
 import { formatCurrency, convertAmount } from "@/lib/utils";
 import dayjs from "dayjs";
+import React, { useState } from "react";
 import ListHeading from "@/components/ListHeading";
 import UpcomingSubscriptionCard from "@/components/UpcomingSubscriptionCard";
 import SubscriptionCard from "@/components/SubscriptionCard";
 import CreateSubscriptionModal from "@/components/CreateSubscriptionModal";
 import AdjustBalanceModal from "@/components/AdjustBalanceModal";
-import { useState } from "react";
 import { useUser } from "@clerk/expo";
 import { useSubscriptions } from "@/context/SubscriptionContext";
 import { useTheme } from "@/context/ThemeContext";
@@ -22,7 +22,7 @@ const SafeAreaView = styled(RNSafeAreaView);
 export default function App() {
     const { user } = useUser();
     const [expandedSubscriptionId, setExpandedSubscriptionId] = useState<string | null>(null);
-    const { subscriptions, addSubscription, balance, updateBalance, currency } = useSubscriptions();
+    const { subscriptions, addSubscription, balance, updateBalance, currency, isDemoMode } = useSubscriptions();
     const { isDark } = useTheme();
     const [modalVisible, setModalVisible] = useState(false);
     const [adjustModalVisible, setAdjustModalVisible] = useState(false);
@@ -31,11 +31,38 @@ export default function App() {
         addSubscription(subscription);
     };
 
-    const upcomingConverted = UPCOMING_SUBSCRIPTIONS.map(sub => ({
-        ...sub,
-        price: convertAmount(sub.price, "USD", currency), // Assuming base for static data is USD
-        currency: currency
-    }));
+    const upcomingConverted = React.useMemo(() => {
+        const now = dayjs();
+        const monthKey = now.format('YYYY-MM');
+        if (isDemoMode) {
+            return subscriptions
+                .filter(sub => sub.status === 'active' && (sub.renewalDate || (sub.billing === 'One-time' && sub.startDate)))
+                .map(sub => {
+                    let price = sub.price;
+                    const subDate = dayjs(sub.renewalDate || sub.startDate);
+                    if (sub.monthlyAdjustments && monthKey in sub.monthlyAdjustments) {
+                        const adjustment = sub.monthlyAdjustments[monthKey];
+                        if (adjustment === 'skip') return null;
+                        if (typeof adjustment === 'number') price = adjustment;
+                    }
+                    return {
+                        id: sub.id,
+                        icon: sub.icon,
+                        name: sub.name,
+                        price: price,
+                        currency: sub.currency,
+                        daysLeft: dayjs(sub.renewalDate).diff(now, 'day')
+                    };
+                })
+                .filter((sub): sub is UpcomingSubscription => sub !== null && sub.daysLeft >= 0 && sub.daysLeft <= 15)
+                .sort((a, b) => a.daysLeft - b.daysLeft);
+        }
+        return UPCOMING_SUBSCRIPTIONS.map(sub => ({
+            ...sub,
+            price: convertAmount(sub.price, "USD", currency), // Assuming base for static data is USD
+            currency: currency
+        }));
+    }, [subscriptions, isDemoMode, currency]);
 
     return (
         <SafeAreaView className="flex-1 bg-background dark:bg-[#0f1117] p-5">
@@ -43,7 +70,7 @@ export default function App() {
             <FlatList
                 ListHeaderComponent={() => (
                     <>
-                        <View className="home-header">
+                        <View className="home-header mb-2">
                             <View className="home-user">
                                 <Image 
                                     source={user?.imageUrl ? { uri: user.imageUrl } : images.avatar} 
@@ -82,7 +109,7 @@ export default function App() {
                                     {formatCurrency(balance, currency)}
                                 </Text>
                                 <Text className="home-balance-date">
-                                    {dayjs(HOME_BALANCE.nextRenewalDate).format("MM/DD")}
+                                    {dayjs(isDemoMode ? DUMMY_SUBSCRIPTIONS[0].renewalDate : HOME_BALANCE.nextRenewalDate).format("MM/DD")}
                                 </Text>
                             </View>
                         </View>
@@ -96,7 +123,11 @@ export default function App() {
                                 renderItem={({ item }) => <UpcomingSubscriptionCard {...item} />}
                                 horizontal
                                 showsHorizontalScrollIndicator={false}
-                                ListEmptyComponent={<Text className="home-empty-state">No upcoming renewals yet.</Text>}
+                                ListEmptyComponent={
+                                    <View className="flex-1 justify-center items-center h-20 w-[100vw]">
+                                        <Text className="home-empty-state">No upcoming renewals yet.</Text>
+                                    </View>
+                                }
                             />
                         </View>
 

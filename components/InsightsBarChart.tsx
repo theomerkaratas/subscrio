@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text } from 'react-native';
+import { View, Text, Pressable } from 'react-native';
 
 export type BarChartDataPoint = {
   label: string;
@@ -11,9 +11,11 @@ type InsightsBarChartProps = {
   data: BarChartDataPoint[];
   maxValue?: number;
   yAxisSteps?: number[];
+  onBarPress?: (index: number) => void;
+  selectedIndex?: number | null;
 };
 
-const InsightsBarChart = ({ data, maxValue, yAxisSteps }: InsightsBarChartProps) => {
+const InsightsBarChart = ({ data, maxValue, yAxisSteps, onBarPress, selectedIndex }: InsightsBarChartProps) => {
   const rawMax = data.length > 0 ? Math.max(...data.map((d) => d.value)) : 0;
   const computedMax = maxValue ?? (Math.ceil(Math.max(rawMax, 0) / 5) * 5 || 1);
   const steps = yAxisSteps ?? [0, 5, 25, 35, 45];
@@ -46,27 +48,25 @@ const InsightsBarChart = ({ data, maxValue, yAxisSteps }: InsightsBarChartProps)
 
           {/* Bars */}
           <View className="insights-bars-row">
-            {data.map((point) => {
+            {data.map((point, index) => {
               const heightPercent = computedMax > 0 ? (point.value / computedMax) * 100 : 0;
+              const isSelected = selectedIndex === index;
               return (
-                <View key={point.label} className="insights-bar-col">
-                  {/* Value bubble above highlighted bar */}
-                  {point.highlighted && (
-                    <View className="insights-bubble">
-                      <Text className="insights-bubble-text">${point.value}</Text>
-                    </View>
-                  )}
-
+                <Pressable
+                  key={point.label}
+                  className="insights-bar-col"
+                  onPress={() => onBarPress?.(index)}
+                >
                   {/* The bar itself */}
                   <View
                     className={
-                      point.highlighted
+                      isSelected
                         ? 'insights-bar insights-bar-highlighted'
                         : 'insights-bar insights-bar-default'
                     }
                     style={{ height: `${heightPercent}%` as any }}
                   />
-                </View>
+                </Pressable>
               );
             })}
           </View>

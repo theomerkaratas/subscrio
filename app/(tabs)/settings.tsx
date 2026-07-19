@@ -22,7 +22,7 @@ const Settings = () => {
   const { user } = useUser()
   const router = useRouter()
   const { isDark, toggleTheme } = useTheme()
-  const { currency, updateCurrency } = useSubscriptions()
+  const { currency, updateCurrency, isDemoMode, setDemoMode } = useSubscriptions()
 
   const handleSignOut = () => {
     Alert.alert("Sign Out", "Are you sure you want to sign out?", [
@@ -182,6 +182,33 @@ const Settings = () => {
             thumbColor="#ffffff"
             ios_backgroundColor="rgba(0,0,0,0.15)"
             accessibilityLabel="Toggle dark mode"
+            accessibilityRole="switch"
+          />
+        </View>
+      </View>
+
+      {/* Demo Mode section */}
+      <View className="rounded-3xl border border-border dark:border-[rgba(255,255,255,0.1)] bg-card dark:bg-[#1a1d27] p-5 mb-4">
+        <Text className="text-xs font-sans-semibold uppercase tracking-[1px] text-muted-foreground dark:text-[rgba(255,255,255,0.55)] mb-4">
+          Development
+        </Text>
+
+        <View className="flex-row items-center justify-between">
+          <View className="gap-1 flex-1 pr-4">
+            <Text className="text-base font-sans-semibold text-primary dark:text-[#f0ede4]">
+              Demo Mode
+            </Text>
+            <Text className="text-sm font-sans-medium text-muted-foreground dark:text-[rgba(255,255,255,0.55)]">
+              Populate the app with realistic dummy data for testing.
+            </Text>
+          </View>
+          <Switch
+            value={isDemoMode}
+            onValueChange={setDemoMode}
+            trackColor={{ false: "rgba(0,0,0,0.15)", true: "#ea7a53" }}
+            thumbColor="#ffffff"
+            ios_backgroundColor="rgba(0,0,0,0.15)"
+            accessibilityLabel="Toggle demo mode"
             accessibilityRole="switch"
           />
         </View>

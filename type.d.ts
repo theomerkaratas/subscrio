@@ -14,8 +14,9 @@ declare global {
 
     interface Subscription {
         id: string;
-        icon: ImageSourcePropType;
+        icon: ImageSourcePropType | string;
         name: string;
+        domain?: string;
         plan?: string;
         category?: string;
         paymentMethod?: string;
@@ -26,6 +27,7 @@ declare global {
         billing: "Monthly" | "Yearly" | "One-time";
         renewalDate?: string;
         color?: string;
+        monthlyAdjustments?: { [monthYear: string]: number | "skip" };
     }
 
     interface SubscriptionCardProps extends Omit<Subscription, "id"> {
@@ -40,7 +42,7 @@ declare global {
 
     interface UpcomingSubscription {
         id: string;
-        icon: ImageSourcePropType;
+        icon: ImageSourcePropType | string;
         name: string;
         price: number;
         currency?: string;

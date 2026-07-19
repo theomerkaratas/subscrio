@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, Image } from 'react-native';
+import { View, Text, Image, ImageSourcePropType } from 'react-native';
 
 export type InsightsHistoryItem = {
   id: string;
-  icon: any;
+  icon: ImageSourcePropType | string;
   name: string;
   date: string;   // e.g. "June 25, 12:00"
   price: number;
@@ -32,7 +32,12 @@ const InsightsHistoryCard = ({
     <View className="insights-history-card">
       {/* Icon */}
       <View className="insights-history-icon-wrap">
-        <Image source={icon} className="insights-history-icon" resizeMode="contain" />
+        <Image 
+          source={typeof icon === 'string' ? { uri: icon } : icon} 
+          className="insights-history-icon" 
+          resizeMode="contain" 
+          style={typeof icon === 'string' ? { width: 36, height: 36, borderRadius: 8 } : undefined}
+        />
       </View>
 
       {/* Name + date */}
