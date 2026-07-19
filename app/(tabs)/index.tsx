@@ -105,7 +105,7 @@ export default function App() {
                         price: price,
                         currency: sub.currency,
                         daysLeft: dayjs(sub.renewalDate).diff(now, 'day')
-                    };
+                    } as UpcomingSubscription;
                 })
                 .filter((sub): sub is UpcomingSubscription => sub !== null && sub.daysLeft >= 0 && sub.daysLeft <= 15)
                 .sort((a, b) => a.daysLeft - b.daysLeft);

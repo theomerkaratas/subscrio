@@ -28,6 +28,7 @@ declare global {
         renewalDate?: string;
         color?: string;
         monthlyAdjustments?: { [monthYear: string]: number | "skip" };
+        usage?: { [monthYear: string]: "low" | "medium" | "high" };
     }
 
     interface SubscriptionCardProps extends Omit<Subscription, "id"> {
