@@ -480,4 +480,305 @@
     .subs-empty-subtitle {
         @apply text-sm font-sans-medium text-muted-foreground;
     }
+
+    /* ─── Monthly Insights screen ─────────────────────────────────────────── */
+
+    /* Header row */
+    .insights-header {
+        @apply flex-row items-center justify-between px-5 py-3;
+    }
+
+    .insights-header-btn {
+        @apply size-10 items-center justify-center rounded-full border border-border bg-background;
+    }
+
+    .insights-header-icon {
+        @apply size-5;
+    }
+
+    .insights-header-title {
+        @apply text-xl font-sans-bold text-primary;
+    }
+
+    /* Section heading row (title + "View all") */
+    .insights-section-head {
+        @apply mb-3 flex-row items-center justify-between;
+    }
+
+    .insights-section-title {
+        @apply text-2xl font-sans-bold text-primary;
+    }
+
+    .insights-view-all-btn {
+        @apply rounded-full border border-border px-4 py-1;
+    }
+
+    .insights-view-all-text {
+        @apply text-base font-sans-semibold text-primary;
+    }
+
+    /* Scroll content wrapper */
+    .insights-scroll-content {
+        @apply px-5 pb-36;
+    }
+
+    /* ── Bar chart ──────────────────────────────────────────────────────────── */
+
+    /* Outer card wrapping the chart */
+    .insights-chart-card {
+        @apply mb-4 rounded-2xl bg-muted p-4;
+    }
+
+    /* Root container of the chart component */
+    .insights-chart-container {
+        @apply w-full;
+    }
+
+    /* Row that holds y-axis + plot area */
+    .insights-chart-inner {
+        @apply h-44 flex-row;
+    }
+
+    /* Y-axis label column */
+    .insights-yaxis {
+        @apply w-8 justify-between;
+    }
+
+    .insights-yaxis-label {
+        @apply text-right text-xs font-sans-medium text-muted-foreground;
+    }
+
+    /* Plot area: contains grid lines + bars */
+    .insights-plot-area {
+        @apply relative flex-1 overflow-hidden;
+    }
+
+    /* Individual dashed grid line */
+    .insights-grid-line {
+        @apply absolute left-0 right-0 h-px border-t border-dashed border-muted-foreground opacity-30;
+    }
+
+    /* Row of bars */
+    .insights-bars-row {
+        @apply absolute inset-0 flex-row items-end justify-around;
+    }
+
+    /* Column that holds one bar + its optional bubble */
+    .insights-bar-col {
+        @apply flex-1 items-center justify-end;
+    }
+
+    /* Shared bar styles */
+    .insights-bar {
+        @apply w-5 rounded-t-lg;
+    }
+
+    .insights-bar-default {
+        @apply bg-primary;
+    }
+
+    .insights-bar-highlighted {
+        @apply bg-accent;
+    }
+
+    /* Value bubble above highlighted bar */
+    .insights-bubble {
+        @apply mb-1 rounded-full bg-muted px-2 py-0.5;
+    }
+
+    .insights-bubble-text {
+        @apply text-xs font-sans-bold text-accent;
+    }
+
+    /* X-axis row (spacer + labels) */
+    .insights-xaxis {
+        @apply mt-2 flex-row;
+    }
+
+    .insights-yaxis-spacer {
+        @apply w-8;
+    }
+
+    .insights-xaxis-labels {
+        @apply flex-1 flex-row justify-around;
+    }
+
+    .insights-xaxis-label {
+        @apply flex-1 text-center text-xs font-sans-medium text-muted-foreground;
+    }
+
+    /* ── Expenses summary card ──────────────────────────────────────────────── */
+
+    .insights-expenses-card {
+        @apply mb-6 flex-row items-center justify-between rounded-2xl border border-border bg-background p-5;
+    }
+
+    .insights-expenses-left {
+        @apply gap-1;
+    }
+
+    .insights-expenses-label {
+        @apply text-lg font-sans-bold text-primary;
+    }
+
+    .insights-expenses-date {
+        @apply text-sm font-sans-medium text-muted-foreground;
+    }
+
+    .insights-expenses-right {
+        @apply items-end gap-1;
+    }
+
+    .insights-expenses-amount {
+        @apply text-lg font-sans-bold text-primary;
+    }
+
+    .insights-expenses-change {
+        @apply text-sm font-sans-semibold text-muted-foreground;
+    }
+
+    /* ── History card ───────────────────────────────────────────────────────── */
+
+    .insights-history-list {
+        @apply gap-3;
+    }
+
+    .insights-history-card {
+        @apply flex-row items-center rounded-2xl p-4;
+    }
+
+    .insights-history-icon-wrap {
+        @apply size-14 items-center justify-center rounded-xl bg-muted;
+    }
+
+    .insights-history-icon {
+        @apply size-9;
+    }
+
+    .insights-history-copy {
+        @apply ml-3 min-w-0 flex-1 gap-0.5;
+    }
+
+    .insights-history-name {
+        @apply text-lg font-sans-bold text-primary;
+    }
+
+    .insights-history-date {
+        @apply text-sm font-sans-medium text-muted-foreground;
+    }
+
+    .insights-history-price-box {
+        @apply ml-3 shrink-0 items-end gap-0.5;
+    }
+
+    .insights-history-price {
+        @apply text-lg font-sans-bold text-primary;
+    }
+
+    .insights-history-billing {
+        @apply text-sm font-sans-medium text-muted-foreground;
+    }
+
+    /* ─── Spending Area Chart ──────────────────────────────────────────────── */
+
+    /* Section title spacing override (no "View all" button on this section) */
+    .insights-area-section-title {
+        @apply mb-3;
+    }
+
+    /* Rounded card that wraps the entire chart */
+    .insights-area-chart-card {
+        @apply mb-6 rounded-2xl bg-muted p-4;
+    }
+
+    /* Max-value label sitting above the plot area */
+    .insights-area-yaxis-label {
+        @apply mb-1 text-right text-xs font-sans-semibold text-muted-foreground;
+    }
+
+    /* X-axis month label — width is set via inline style (COL_WIDTH) */
+    .insights-area-xaxis-label {
+        @apply text-center text-xs font-sans-medium text-muted-foreground;
+    }
+
+    /* Active month label becomes bold and primary-coloured */
+    .insights-area-xaxis-label-active {
+        @apply font-sans-bold text-primary;
+    }
+
+    /* Thin indicator bar at the top edge of an active column */
+    .insights-area-col-active-bar {
+        @apply absolute left-0.5 right-0.5 h-0.5 rounded-sm bg-primary opacity-40;
+    }
+
+    /* ── Breakdown panel ──────────────────────────────────────────────────────── */
+
+    /* Shown below the chart while a column is pressed */
+    .insights-area-breakdown {
+        @apply mt-3 rounded-xl border border-border bg-background p-3;
+    }
+
+    /* Header row: month name left, total right */
+    .insights-area-breakdown-header {
+        @apply mb-2 flex-row items-center justify-between;
+    }
+
+    .insights-area-breakdown-month {
+        @apply text-sm font-sans-semibold text-muted-foreground;
+    }
+
+    .insights-area-breakdown-total {
+        @apply text-base font-sans-bold text-primary;
+    }
+
+    /* One row per subscription in the breakdown */
+    .insights-area-breakdown-row {
+        @apply flex-row items-center gap-2 py-0.5;
+    }
+
+    /* Colour swatch — background set via inline style from subscription data */
+    .insights-area-breakdown-dot {
+        @apply size-2.5 shrink-0 rounded-full;
+    }
+
+    /* Subscription name — truncates if too long */
+    .insights-area-breakdown-name {
+        @apply flex-1 text-xs font-sans-medium text-primary;
+    }
+
+    /* Contribution amount — right-aligned */
+    .insights-area-breakdown-amount {
+        @apply shrink-0 text-xs font-sans-semibold text-primary;
+    }
+
+    /* Placeholder shown when no month is selected — reserves height so card doesn't jump */
+    .insights-area-breakdown-placeholder {
+        @apply mt-3 items-center py-3;
+    }
+
+    .insights-area-breakdown-hint {
+        @apply text-xs font-sans-medium text-muted-foreground;
+    }
+
+    /* ── Bottom legend ──────────────────────────────────────────────────────── */
+
+    /* Wraps all legend items; wraps to a second line if subscriptions overflow */
+    .insights-area-legend {
+        @apply mt-4 flex-row flex-wrap gap-x-4 gap-y-2;
+    }
+
+    /* Single legend entry: swatch + name */
+    .insights-area-legend-item {
+        @apply flex-row items-center gap-1.5;
+    }
+
+    /* Colour swatch — background set via inline style from subscription data */
+    .insights-area-legend-dot {
+        @apply size-2.5 shrink-0 rounded-full;
+    }
+
+    /* Subscription name text */
+    .insights-area-legend-label {
+        @apply text-xs font-sans-medium text-muted-foreground;
+    }
 }
